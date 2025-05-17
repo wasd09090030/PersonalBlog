@@ -12,7 +12,12 @@
    ```bash
    npm install
    ```
-2. 启动开发服务器:
+2.运行后端
+```bash
+npm run start:dev
+```
+3. 启动开发服务器:
    ```bash
    npm run dev
    ```
+   
