@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import './style.css'
+import 'bootstrap/dist/css/bootstrap.min.css'; // 导入 Bootstrap CSS
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // 导入 Bootstrap JS (包含 Popper)
 
 //引入v-md-editor 编辑器
 import VMdEditor from '@kangc/v-md-editor/lib/codemirror-editor';
@@ -33,6 +35,7 @@ import 'codemirror/addon/scroll/simplescrollbars.css';
 // style
 import 'codemirror/lib/codemirror.css';
 
+import router from './router'; // 导入路由
 
 VMdEditor.Codemirror = Codemirror;
 VMdEditor.use(githubTheme, {
@@ -41,4 +44,5 @@ VMdEditor.use(githubTheme, {
 
 const app = createApp(App)
 app.use(VMdEditor);
+app.use(router); // 使用路由
 app.mount('#app')
