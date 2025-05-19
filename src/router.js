@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import ArticleList from './components/ArticleList.vue';
 import ArticleForm from './components/ArticleForm.vue';
+import ArticleDetail from './components/ArticleDetail.vue'; // 导入文章详情组件
 
 const routes = [
   {
@@ -19,6 +20,12 @@ const routes = [
     name: 'EditArticle',
     component: ArticleForm,
     props: route => ({ mode: 'edit', id: route.params.id })
+  },
+  {
+    path: '/article/:id',
+    name: 'ArticleDetail',
+    component: ArticleDetail,
+    props: true
   },
 ];
 

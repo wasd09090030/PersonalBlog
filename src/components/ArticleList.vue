@@ -15,12 +15,17 @@
       <div v-for="article in articles" :key="article.id" class="col">
         <div class="card h-100 shadow-sm">
           <div class="card-body d-flex flex-column">
-            <h5 class="card-title text-primary">{{ article.title }}</h5>
+            <router-link :to="`/article/${article.id}`" class="article-title-link">
+              <h5 class="card-title text-primary">{{ article.title }}</h5>
+            </router-link>
             <div class="mb-2">
               <span class="badge bg-secondary text-white">{{ formatDate(article.createdAt) }}</span>
             </div>
             <!-- eslint-disable-next-line vue/no-v-html -->
             <div v-html="article.content" class="article-content-html flex-grow-1 mb-3"></div>
+            <router-link :to="`/article/${article.id}`" class="btn btn-link text-primary p-0 mb-2 align-self-start">
+              阅读更多...
+            </router-link>
             <div class="mt-auto d-flex justify-content-end">
               <router-link :to="`/edit/${article.id}`" class="btn btn-sm btn-outline-primary me-2">
                 <i class="bi bi-pencil-square me-1"></i> 编辑
@@ -114,7 +119,18 @@ onMounted(() => {
   max-height: 200px; /* 调整预览高度 */
   overflow: hidden;
   position: relative;
-  /* 移除自定义的渐变遮罩，如果需要可以重新设计或使用其他方法 */
+}
+
+/* 添加渐变遮罩，提示用户有更多内容 */
+.article-content-html::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px; /* 遮罩高度 */
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1));
+  pointer-events: none; /* 确保不会阻挡文本选择 */
 }
 
 /* 如果需要，可以保留或调整之前针对 v-html 内容的样式 */
@@ -176,4 +192,14 @@ onMounted(() => {
 /* 如果需要 Bootstrap 图标，请确保已安装 bootstrap-icons */
 /* 例如: npm install bootstrap-icons */
 /* 并在 main.js 中导入: import 'bootstrap-icons/font/bootstrap-icons.css'; */
+
+/* 添加标题链接样式 */
+.article-title-link {
+  text-decoration: none;
+}
+
+.article-title-link:hover .card-title {
+  color: #0a58ca !important; /* 鼠标悬停时的标题颜色 */
+  text-decoration: underline;
+}
 </style>
