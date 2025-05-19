@@ -1,8 +1,7 @@
 <template>
-  <div class="article-list-page">
-    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+  <div class="article-list-page">    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
       <h2 class="mb-0">文章列表</h2>
-      <router-link to="/add" class="btn btn-success">
+      <router-link v-if="isAdmin" to="/add" class="btn btn-success">
         <i class="bi bi-plus-circle-fill me-2"></i>撰写新文章
       </router-link>
     </div>
@@ -13,8 +12,7 @@
     
     <div v-if="articles.length" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
       <div v-for="article in articles" :key="article.id" class="col">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body d-flex flex-column">
+        <div class="card h-100 shadow-sm">          <div class="card-body d-flex flex-column">
             <router-link :to="`/article/${article.id}`" class="article-title-link">
               <h5 class="card-title text-primary">{{ article.title }}</h5>
             </router-link>
@@ -25,8 +23,7 @@
             <div v-html="article.content" class="article-content-html flex-grow-1 mb-3"></div>
             <router-link :to="`/article/${article.id}`" class="btn btn-link text-primary p-0 mb-2 align-self-start">
               阅读更多...
-            </router-link>
-            <div class="mt-auto d-flex justify-content-end">
+            </router-link>            <div v-if="isAdmin" class="mt-auto d-flex justify-content-end">
               <router-link :to="`/edit/${article.id}`" class="btn btn-sm btn-outline-primary me-2">
                 <i class="bi bi-pencil-square me-1"></i> 编辑
               </router-link>
@@ -46,10 +43,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import auth from '../store/auth';
 
 const articles = ref([]);
 const error = ref(null);
+
+// 计算当前是否为管理员
+const isAdmin = computed(() => auth.isAdmin());
 
 // 格式化日期的辅助函数
 function formatDate(dateString) {
@@ -133,6 +134,16 @@ onMounted(() => {
   pointer-events: none; /* 确保不会阻挡文本选择 */
 }
 
+/* 添加标题链接样式 */
+.article-title-link {
+  text-decoration: none;
+}
+
+.article-title-link:hover .card-title {
+  color: #0a58ca !important; /* 鼠标悬停时的标题颜色 */
+  text-decoration: underline;
+}
+
 /* 如果需要，可以保留或调整之前针对 v-html 内容的样式 */
 .article-content-html ::v-deep(h1),
 .article-content-html ::v-deep(h2),
@@ -192,14 +203,4 @@ onMounted(() => {
 /* 如果需要 Bootstrap 图标，请确保已安装 bootstrap-icons */
 /* 例如: npm install bootstrap-icons */
 /* 并在 main.js 中导入: import 'bootstrap-icons/font/bootstrap-icons.css'; */
-
-/* 添加标题链接样式 */
-.article-title-link {
-  text-decoration: none;
-}
-
-.article-title-link:hover .card-title {
-  color: #0a58ca !important; /* 鼠标悬停时的标题颜色 */
-  text-decoration: underline;
-}
 </style>

@@ -19,16 +19,14 @@
             最后更新: {{ formatDate(article.updatedAt) }}
           </span>
         </div>
-      </div>
-
-      <div class="article-actions mb-4">
-        <router-link :to="`/edit/${article.id}`" class="btn btn-outline-primary me-2">
+      </div>      <div class="article-actions mb-4">
+        <router-link v-if="isAdmin" :to="`/edit/${article.id}`" class="btn btn-outline-primary me-2">
           <i class="bi bi-pencil-square me-1"></i> 编辑
         </router-link>
-        <button @click="confirmDelete" class="btn btn-outline-danger">
+        <button v-if="isAdmin" @click="confirmDelete" class="btn btn-outline-danger">
           <i class="bi bi-trash-fill me-1"></i> 删除
         </button>
-        <router-link to="/" class="btn btn-outline-secondary ms-2">
+        <router-link to="/" class="btn btn-outline-secondary" :class="{ 'ms-2': isAdmin }">
           返回列表
         </router-link>
       </div>
@@ -46,14 +44,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import auth from '../store/auth';
 
 const route = useRoute();
 const router = useRouter();
 const article = ref(null);
 const loading = ref(true);
 const error = ref(null);
+
+// 计算当前是否为管理员
+const isAdmin = computed(() => auth.isAdmin());
 
 // 格式化日期的辅助函数
 function formatDate(dateString) {

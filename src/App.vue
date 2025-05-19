@@ -11,8 +11,11 @@
             <li class="nav-item">
               <router-link to="/" class="nav-link" active-class="active">首页</router-link>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" v-if="isAdmin">
               <router-link to="/add" class="nav-link" active-class="active">添加文章</router-link>
+            </li>
+            <li class="nav-item ms-2">
+              <RoleSelectionModal />
             </li>
           </ul>
         </div>
@@ -24,11 +27,20 @@
         <router-view></router-view> <!-- 路由匹配的组件将在这里渲染 -->
       </main>
     </div>
+
+    <!-- Toast通知组件 -->
+    <Toast />
   </div>
 </template>
 
 <script setup>
-// App.vue 现在主要作为布局容器，移除了之前的表单逻辑
+import RoleSelectionModal from './components/RoleSelectionModal.vue';
+import Toast from './components/Toast.vue';
+import auth from './store/auth';
+import { computed } from 'vue';
+
+// 计算属性：是否为管理员
+const isAdmin = computed(() => auth.isAdmin());
 </script>
 
 <style scoped>
