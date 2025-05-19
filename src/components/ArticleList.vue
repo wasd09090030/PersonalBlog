@@ -16,7 +16,9 @@
         <div class="card h-100 shadow-sm">
           <div class="card-body d-flex flex-column">
             <h5 class="card-title text-primary">{{ article.title }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted" v-if="article.author">作者: {{ article.author }}</h6>
+            <div class="mb-2">
+              <span class="badge bg-secondary text-white">{{ formatDate(article.createdAt) }}</span>
+            </div>
             <!-- eslint-disable-next-line vue/no-v-html -->
             <div v-html="article.content" class="article-content-html flex-grow-1 mb-3"></div>
             <div class="mt-auto d-flex justify-content-end">
@@ -43,6 +45,19 @@ import { ref, onMounted } from 'vue';
 
 const articles = ref([]);
 const error = ref(null);
+
+// 格式化日期的辅助函数
+function formatDate(dateString) {
+  if (!dateString) return '未知日期';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('zh-CN', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
 
 async function fetchArticles() {
   error.value = null;

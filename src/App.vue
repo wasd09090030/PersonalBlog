@@ -19,7 +19,7 @@
       </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
       <main>
         <router-view></router-view> <!-- 路由匹配的组件将在这里渲染 -->
       </main>

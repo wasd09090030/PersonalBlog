@@ -17,8 +17,8 @@ export class Article {
   @Column('text')
   content: string;
 
-  @Column({ nullable: true })
-  author: string;
+  @Column('text', { nullable: true })
+  contentMarkdown: string;
 
   @CreateDateColumn()
   createdAt: Date;

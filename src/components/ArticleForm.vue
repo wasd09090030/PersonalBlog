@@ -6,15 +6,9 @@
       </div>
       <div class="card-body">
         <form @submit.prevent="submitArticle">
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="title" class="form-label">标题:</label>
-              <input type="text" id="title" class="form-control" v-model="article.title" required />
-            </div>
-            <div class="col-md-6">
-              <label for="author" class="form-label">作者:</label>
-              <input type="text" id="author" class="form-control" v-model="article.author" :disabled="props.mode === 'edit'" />
-            </div>
+          <div class="mb-3">
+            <label for="title" class="form-label">标题:</label>
+            <input type="text" id="title" class="form-control" v-model="article.title" required />
           </div>
           
           <div class="mb-3">
@@ -57,7 +51,6 @@ const props = defineProps({
 const router = useRouter();
 const article = ref({
   title: '',
-  author: '',
   contentMarkdown: '', // Store markdown content here
 });
 const error = ref(null);
@@ -77,7 +70,6 @@ async function fetchArticleForEdit() {
       const data = await response.json();
       article.value = { 
         title: data.title,
-        author: data.author, // 确保编辑时也加载作者信息
         contentMarkdown: data.contentMarkdown || data.content // 优先使用 contentMarkdown，如果不存在则使用 content
       }; 
     } catch (e) {
@@ -96,7 +88,6 @@ async function submitArticle() {
 
     const payload = {
       title: article.value.title,
-      author: article.value.author, // 确保提交时包含作者信息
       content: htmlContent, // 发送HTML到后端
       contentMarkdown: article.value.contentMarkdown // 同时发送Markdown原文
     };
