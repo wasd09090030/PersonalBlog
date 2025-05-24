@@ -5,6 +5,6 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   server: {
-    port: 5174, // 您可以选择任何未被占用的端口
+    port: 5174, 
   },
 })

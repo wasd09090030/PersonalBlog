@@ -1,26 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import ArticleList from './components/ArticleList.vue';
-import ArticleForm from './components/ArticleForm.vue';
 import ArticleDetail from './components/ArticleDetail.vue';
+import AdminLayout from './layouts/AdminLayout.vue';
+import AdminLogin from './views/admin/AdminLogin.vue';
+import AdminDashboard from './views/admin/AdminDashboard.vue';
+import ArticleManager from './views/admin/ArticleManager.vue';
+import ArticleEditor from './views/admin/ArticleEditor.vue';
 import auth from './store/auth';
 
 const routes = [
+  // 前端展示路由 - 保持不变
   {
     path: '/',
     name: 'ArticleList',
     component: ArticleList,
-  },
-  {
-    path: '/add',
-    name: 'AddArticle',
-    component: ArticleForm,
-    props: { mode: 'add' }
-  },
-  {
-    path: '/edit/:id',
-    name: 'EditArticle',
-    component: ArticleForm,
-    props: route => ({ mode: 'edit', id: route.params.id })
   },
   {
     path: '/article/:id',
@@ -28,6 +21,41 @@ const routes = [
     component: ArticleDetail,
     props: true
   },
+  
+  // 管理员路由 - 完全独立的路径
+  {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: AdminLogin,
+  },
+  {
+    path: '/admin',
+    component: AdminLayout,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        name: 'AdminDashboard',
+        component: AdminDashboard
+      },
+      {
+        path: 'articles',
+        name: 'ArticleManager',
+        component: ArticleManager
+      },
+      {
+        path: 'articles/new',
+        name: 'ArticleEditor',
+        component: ArticleEditor
+      },
+      {
+        path: 'articles/:id/edit',
+        name: 'ArticleEditorEdit',
+        component: ArticleEditor,
+        props: true
+      }
+    ]
+  }
 ];
 
 const router = createRouter({
@@ -35,24 +63,17 @@ const router = createRouter({
   routes,
 });
 
-// 导入 Toast 通知功能
-import { showToast } from './components/Toast.vue';
-
-// 路由守卫，限制非管理员访问添加/编辑页面
+// 添加路由守卫，针对需要验证的管理员路由
 router.beforeEach((to, from, next) => {
-  // 初始化用户角色
-  auth.initUserRole();
-  
-  // 如果尝试访问需要管理员权限的页面，但不是管理员
-  if ((to.name === 'AddArticle' || to.name === 'EditArticle') && !auth.isAdmin()) {
-    // 重定向到文章列表页
-    next({ name: 'ArticleList' });
-    // 显示权限不足的提示信息
-    setTimeout(() => {
-      showToast('您需要管理员权限才能执行此操作', 'danger', 5000);
-    }, 300);
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // 检查是否已登录为管理员
+    if (auth.isAdmin()) {
+      next();
+    } else {
+      // 未登录，重定向到登录页
+      next({ name: 'AdminLogin' });
+    }
   } else {
-    // 其他情况正常导航
     next();
   }
 });
