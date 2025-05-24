@@ -40,23 +40,18 @@
               <option value="other">其他</option>
             </select>
           </div>
-          
-          <div class="mb-3">
-            <label for="contentMarkdown" class="form-label">内容 (Markdown)</label>
-            <textarea 
-              class="form-control" 
-              id="contentMarkdown" 
+            <div class="mb-3">
+            <label class="form-label">内容 (Markdown编辑器)</label>
+            <MdEditor
               v-model="articleForm.contentMarkdown"
-              rows="15" 
+              height="500px"
+              :toolbars="toolbars"
+              preview-theme="github"
+              code-theme="github"
+              language="zh-CN"
+              @onChange="handleContentChange"
               required
-            ></textarea>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">预览</label>
-            <div class="preview-container border rounded p-3">
-              <div v-html="htmlPreview"></div>
-            </div>
+            />
           </div>
           
           <div class="d-flex justify-content-between">
@@ -78,6 +73,51 @@ import { useRoute, useRouter } from 'vue-router';
 import articleService from '../../services/articleService';
 import MarkdownIt from 'markdown-it';
 
+// 导入 md-editor-v3 编辑器及其样式
+import { MdEditor, config } from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
+
+// 设置中文界面
+config({
+  editorConfig: {
+    languageUserDefined: {
+      'zh-CN': {
+        toolbarTips: {
+          bold: '加粗',
+          underline: '下划线',
+          italic: '斜体',
+          strikeThrough: '删除线',
+          title: '标题',
+          sub: '下标',
+          sup: '上标',
+          quote: '引用',
+          unorderedList: '无序列表',
+          orderedList: '有序列表',
+          task: '任务列表',
+          codeRow: '行内代码',
+          code: '块级代码',
+          link: '链接',
+          image: '图片',
+          table: '表格',
+          mermaid: 'Mermaid图',
+          katex: 'Katex公式',
+          revoke: '撤销',
+          next: '重做',
+          save: '保存',
+          prettier: '美化',
+          pageFullscreen: '浏览器全屏',
+          fullscreen: '全屏',
+          catalog: '目录',
+          preview: '预览',
+          htmlPreview: 'HTML预览',
+          github: 'GitHub',
+          help: '帮助'
+        }
+      }
+    }
+  }
+});
+
 const route = useRoute();
 const router = useRouter();
 const md = new MarkdownIt();
@@ -92,10 +132,23 @@ const loading = ref(false);
 const isSaving = ref(false);
 const isEdit = computed(() => !!route.params.id);
 
+// 定义编辑器工具栏
+const toolbars = [
+  'bold', 'italic', 'strikethrough', 'heading', 'quote', 
+  'code', 'link', 'image', 'table', 'list-ordered', 'list-unordered',
+  'check', 'line', 'revoke', 'next', 'save', 'prettier',
+  'preview', 'htmlPreview', 'fullscreen', 'pageFullscreen', 'catalog', 'help'
+];
+
 // 转换Markdown为HTML的计算属性
 const htmlPreview = computed(() => {
   return md.render(articleForm.value.contentMarkdown || '');
 });
+
+// 处理编辑器内容变化
+const handleContentChange = (text) => {
+  articleForm.value.contentMarkdown = text;
+};
 
 // 获取文章详情
 const fetchArticle = async (id) => {
@@ -165,14 +218,29 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.preview-container {
-  min-height: 200px;
-  max-height: 400px;
-  overflow-y: auto;
-  background-color: #fff;
+/* 编辑器样式覆盖 */
+:deep(.md-editor) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
-textarea {
-  font-family: monospace;
+:deep(.md-editor-toolbar) {
+  border-bottom: 1px solid #ced4da;
+  background-color: #f8f9fa;
+}
+
+:deep(.md-editor-preview) {
+  padding: 16px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+:deep(.md-editor-input) {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace !important;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 16px !important;
 }
 </style>

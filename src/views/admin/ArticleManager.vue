@@ -1,8 +1,7 @@
 <template>
-  <div class="article-manager">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="article-manager">    <div class="d-flex justify-content-between align-items-center mb-4">
       <h2>文章管理</h2>
-      <button class="btn btn-primary" @click="showCreateModal">
+      <button class="btn btn-primary" @click="createArticle">
         <i class="bi bi-plus-circle me-2"></i>新建文章
       </button>
     </div>
@@ -35,9 +34,8 @@
                 <td>{{ article.title }}</td>
                 <td>{{ formatDate(article.createdAt) }}</td>
                 <td>{{ formatDate(article.updatedAt) }}</td>
-                <td>
-                  <div class="btn-group btn-group-sm">
-                    <button class="btn btn-outline-primary" @click="editArticle(article)" title="编辑">
+                <td>                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" @click="goToEditPage(article)" title="编辑">
                       <i class="bi bi-pencil"></i>
                     </button>
                     <button class="btn btn-outline-danger" @click="confirmDelete(article)" title="删除">
@@ -54,16 +52,7 @@
         </div>
       </div>
     </div>
-    
-    <!-- 文章编辑模态框 -->
-    <ArticleEditModal 
-      :show="showModal" 
-      :article="currentArticle" 
-      @close="closeModal"
-      @saved="handleArticleSaved"
-    />
-
-    <!-- 删除确认模态框 -->
+      <!-- 删除确认模态框 -->
     <ConfirmModal
       :show="showDeleteModal"
       title="确认删除"
@@ -77,15 +66,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import ArticleEditModal from '../../components/admin/ArticleEditModal.vue';
-import ConfirmModal from '../../components/admin/ConfirmModal.vue';
+import { useRouter } from 'vue-router';
+import ConfirmModal from './ConfirmModal.vue';
 import { showToast } from '../../components/Toast.vue';
 import articleService from '../../services/articleService';
 
+const router = useRouter();
 const articles = ref([]);
 const loading = ref(true);
-const showModal = ref(false);
-const currentArticle = ref(null);
 const showDeleteModal = ref(false);
 const articleToDelete = ref(null);
 const deletingArticle = ref(false);
@@ -107,26 +95,15 @@ const fetchArticles = async () => {
   }
 };
 
-const showCreateModal = () => {
-  currentArticle.value = null;
-  showModal.value = true;
+const createArticle = () => {
+  router.push({ name: 'ArticleEditor' });
 };
 
-const editArticle = (article) => {
-  currentArticle.value = { ...article };
-  showModal.value = true;
+const goToEditPage = (article) => {
+  router.push({ name: 'ArticleEditor', params: { id: article.id } });
 };
 
-const closeModal = () => {
-  showModal.value = false;
-  currentArticle.value = null;
-};
-
-const handleArticleSaved = () => {
-  closeModal();
-  fetchArticles();
-  showToast('文章保存成功', 'success');
-};
+// 已经不需要模态框相关的处理函数
 
 const confirmDelete = (article) => {
   articleToDelete.value = article;
