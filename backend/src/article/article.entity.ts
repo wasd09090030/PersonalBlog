@@ -28,6 +28,9 @@ export class Article {
   @Column('text', { nullable: true })
   contentMarkdown: string;
 
+  @Column({ nullable: true })
+  coverImage: string; // 封面图URL
+
   @Column({
     type: 'varchar',
     enum: ArticleCategory,

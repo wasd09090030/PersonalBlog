@@ -13,8 +13,7 @@
           <div class="spinner-border text-primary" role="status"></div>
         </div>
         
-        <form v-else @submit.prevent="saveArticle">
-          <div class="mb-3">
+        <form v-else @submit.prevent="saveArticle">          <div class="mb-3">
             <label for="title" class="form-label">标题</label>
             <input 
               type="text" 
@@ -23,6 +22,35 @@
               v-model="articleForm.title" 
               required
             >
+          </div>
+
+          <!-- 添加封面图URL输入 -->
+          <div class="mb-3">
+            <label for="coverImage" class="form-label">封面图片URL（可选）</label>
+            <input 
+              type="url" 
+              class="form-control" 
+              id="coverImage" 
+              v-model="articleForm.coverImage" 
+              placeholder="https://example.com/image.jpg"
+            >
+            <div class="form-text">请输入有效的图片URL地址</div>
+            
+            <!-- 封面图预览 -->
+            <div v-if="articleForm.coverImage && isValidImageUrl" class="mt-2">
+              <small class="text-muted">封面图预览:</small>
+              <div class="cover-preview mt-1">
+                <img 
+                  :src="articleForm.coverImage" 
+                  alt="封面图预览" 
+                  @error="handleImageError"
+                  @load="handleImageLoad"
+                />
+              </div>
+            </div>
+            <div v-else-if="articleForm.coverImage && !isValidImageUrl" class="mt-2">
+              <small class="text-danger">图片加载失败，请检查URL是否正确</small>
+            </div>
           </div>
           
           <!-- 添加文章类别选择 -->
@@ -125,11 +153,13 @@ const md = new MarkdownIt();
 const articleForm = ref({
   title: '',
   contentMarkdown: '',
+  coverImage: '', // 封面图URL
   category: 'study', // 默认类别
 });
 
 const loading = ref(false);
 const isSaving = ref(false);
+const isValidImageUrl = ref(false);
 const isEdit = computed(() => !!route.params.id);
 
 // 定义编辑器工具栏
@@ -150,6 +180,23 @@ const handleContentChange = (text) => {
   articleForm.value.contentMarkdown = text;
 };
 
+// 处理图片加载成功
+const handleImageLoad = () => {
+  isValidImageUrl.value = true;
+};
+
+// 处理图片加载失败
+const handleImageError = () => {
+  isValidImageUrl.value = false;
+};
+
+// 监听封面图URL变化
+watch(() => articleForm.value.coverImage, (newUrl) => {
+  if (!newUrl) {
+    isValidImageUrl.value = false;
+  }
+});
+
 // 获取文章详情
 const fetchArticle = async (id) => {
   loading.value = true;
@@ -158,8 +205,19 @@ const fetchArticle = async (id) => {
     articleForm.value = {
       title: article.title,
       contentMarkdown: article.contentMarkdown || article.content, // 兼容没有markdown字段的旧数据
+      coverImage: article.coverImage || '', // 封面图URL
       category: article.category || 'study', // 兼容没有类别字段的旧数据
     };
+    // 如果有封面图，检查其有效性
+    if (article.coverImage) {
+      // 延迟检查图片加载状态
+      setTimeout(() => {
+        const img = new Image();
+        img.onload = () => { isValidImageUrl.value = true; };
+        img.onerror = () => { isValidImageUrl.value = false; };
+        img.src = article.coverImage;
+      }, 100);
+    }
   } catch (error) {
     console.error('获取文章失败:', error);
     alert('获取文章失败: ' + error.message);
@@ -176,11 +234,11 @@ const saveArticle = async () => {
   try {
     // 将Markdown转换为HTML
     const htmlContent = md.render(articleForm.value.contentMarkdown);
-    
-    const payload = {
+      const payload = {
       title: articleForm.value.title,
       contentMarkdown: articleForm.value.contentMarkdown,
       content: htmlContent,
+      coverImage: articleForm.value.coverImage || null, // 封面图URL，空值时设为null
       category: articleForm.value.category, // 添加类别字段
     };
     
@@ -218,6 +276,22 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 封面图预览样式 */
+.cover-preview {
+  max-width: 300px;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.cover-preview img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
 /* 编辑器样式覆盖 */
 :deep(.md-editor) {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;

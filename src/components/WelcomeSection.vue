@@ -1,96 +1,163 @@
-<template>  <div class="welcome-section">
+<template>
+  <div class="welcome-section">
     <div class="welcome-content">
       <h1 class="welcome-title">欢迎访问</h1>
       <p class="welcome-text">这里是我的个人博客，记录学习、游戏和个人作品</p>
-      
-      <div class="category-links mt-4">
-        <router-link to="/?category=study" class="category-link study">
-          <i class="bi bi-book me-2"></i>学习
-        </router-link>
-        <router-link to="/?category=game" class="category-link game">
-          <i class="bi bi-controller me-2"></i>游戏
-        </router-link>
-        <router-link to="/?category=work" class="category-link work">
-          <i class="bi bi-briefcase me-2"></i>个人作品
-        </router-link>
-      </div>
+      <p class="welcome-subtitle mt-3">使用导航栏的分类菜单和搜索功能来探索内容</p>
+      <button class="btn btn-explore mt-4" @click="scrollToArticles">
+        探索文章
+        <i class="bi bi-arrow-down ms-2"></i>
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-// 无需额外逻辑
+// 滚动到文章区域
+const scrollToArticles = () => {
+  const articlesSection = document.querySelector('main');
+  if (articlesSection) {
+    articlesSection.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+};
 </script>
 
 <style scoped>
 .welcome-section {
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  padding: 2rem 1rem;
-  margin-bottom: 2rem;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  position: relative;
+  background-image: url('../assets/BlogPicture/Mybackground.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  overflow: hidden;
+}
+
+/* 背景遮罩层 */
+.welcome-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 2;
+  color: white;
+  max-width: 800px;
+  padding: 2rem;
 }
 
 .welcome-title {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
   font-weight: bold;
-  color: #343a40;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  animation: fadeInUp 1s ease-out;
 }
 
 .welcome-text {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  animation: fadeInUp 1s ease-out 0.2s both;
+}
+
+.welcome-subtitle {
+  font-size: 1rem;
+  font-style: italic;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  animation: fadeInUp 1s ease-out 0.4s both;
+}
+
+.btn-explore {
+  background: linear-gradient(45deg, #007bff, #0056b3);
+  border: none;
+  color: white;
+  padding: 12px 30px;
   font-size: 1.1rem;
-  color: #6c757d;
-}
-
-.category-links {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.category-link {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 1.25rem;
-  border-radius: 25px;
-  text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
   transition: all 0.3s ease;
+  animation: fadeInUp 1s ease-out 0.6s both;
 }
 
-.category-link.study {
-  background-color: #e3f2fd;
-  color: #0d6efd;
-}
-
-.category-link.game {
-  background-color: #fff8e1;
-  color: #ff9800;
-}
-
-.category-link.work {
-  background-color: #e8f5e9;
-  color: #4caf50;
-}
-
-.category-link:hover {
+.btn-explore:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+  background: linear-gradient(45deg, #0056b3, #004085);
+  color: white;
 }
 
-@media (max-width: 576px) {
-  .welcome-title {
-    font-size: 1.5rem;
+.btn-explore:active {
+  transform: translateY(0);
+}
+
+/* 动画效果 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .welcome-section {
+    background-attachment: scroll; /* 移动设备上取消固定背景 */
+  }
+  
+  .welcome-content {
+    padding: 1.5rem;
+  }
+  
+  .welcome-title {
+    font-size: 2.5rem;
+  }
+  
+  .welcome-text {
+    font-size: 1.1rem;
+  }
+  
+  .welcome-subtitle {
+    font-size: 0.95rem;
+  }
+  
+  .btn-explore {
+    padding: 10px 25px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-title {
+    font-size: 2rem;
+  }
+  
   .welcome-text {
     font-size: 1rem;
   }
   
-  .category-link {
-    padding: 0.4rem 1rem;
+  .welcome-subtitle {
     font-size: 0.9rem;
   }
 }

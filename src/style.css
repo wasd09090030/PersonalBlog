@@ -60,20 +60,61 @@ button:focus-visible {
   /* text-align: left; /* Or remove if components handle their own text alignment */
 }
 
+/* Global dark/light theme styles */
+[data-bs-theme="dark"] {
+  --bs-body-bg: #121212;
+  --bs-body-color: #ffffff;
+  --bs-border-color: #404040;
+  --bs-secondary-bg: #1e1e1e;
+}
+
+[data-bs-theme="light"] {
+  --bs-body-bg: #f8f9fa;
+  --bs-body-color: #212529;
+  --bs-border-color: #dee2e6;
+  --bs-secondary-bg: #ffffff;
+}
+
+/* Card theme support */
+[data-bs-theme="dark"] .card {
+  background-color: #1e1e1e;
+  border-color: #404040;
+  color: #ffffff;
+}
+
+[data-bs-theme="dark"] .card-title {
+  color: #ffffff;
+}
+
+[data-bs-theme="dark"] .text-primary {
+  color: #66b3ff !important;
+}
+
+[data-bs-theme="dark"] .bg-light {
+  background-color: #121212 !important;
+}
+
+[data-bs-theme="dark"] .alert-info {
+  background-color: #1a4d6b;
+  border-color: #2563eb;
+  color: #bfdbfe;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
   }
-  /* a:hover specific to light mode if needed, else BS handles */
-  /* button background specific to light mode if needed, else BS handles */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     color: rgba(255, 255, 255, 0.87);
-    background-color: #242424; /* Default Vite dark background */
+    background-color: #242424;
   }
-  /* a:hover specific to dark mode if needed, else BS handles */
-  /* button background specific to dark mode if needed, else BS handles */
 }
