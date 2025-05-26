@@ -109,7 +109,6 @@ npm install
 # 后端依赖
 cd backend
 npm install
-cd ..
 ```
 
 ### 3. 启动后端服务

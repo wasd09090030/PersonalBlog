@@ -8,7 +8,7 @@ export const UserRoles = {
 };
 
 // 管理员初始密码 (在实际生产环境中，密码应该存储在后端，并使用哈希加密)
-const ADMIN_PASSWORD = 'wasd090030';
+const ADMIN_PASSWORD = 'admin123';
 // 错误尝试计数
 const loginAttempts = ref(0);
 const lockoutUntil = ref(0);
