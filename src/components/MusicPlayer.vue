@@ -1,7 +1,13 @@
 <template>
   <div class="music-player">
+    <button @click="playPrevTrack" class="music-button" title="上一首">
+      <i class="bi bi-skip-backward-circle"></i>
+    </button>
     <button @click="togglePlay" class="music-button" :title="isPlaying ? '暂停音乐' : '播放音乐'">
       <i class="bi" :class="isPlaying ? 'bi-pause-circle' : 'bi-play-circle'"></i>
+    </button>
+    <button @click="playNextTrack" class="music-button" title="下一首">
+      <i class="bi bi-skip-forward-circle"></i>
     </button>
     <div v-if="isPlaying" class="track-info">
       <span>当前播放: {{ currentTrack.name }}</span>
@@ -50,6 +56,12 @@ const playNextTrack = () => {
   loadAndPlayTrack(tracks[currentTrackIndex.value]);
 };
 
+// 播放上一曲
+const playPrevTrack = () => {
+  currentTrackIndex.value = (currentTrackIndex.value - 1 + tracks.length) % tracks.length;
+  loadAndPlayTrack(tracks[currentTrackIndex.value]);
+};
+
 // 加载并播放曲目
 const loadAndPlayTrack = (track) => {
   if (!audioPlayer.value) return;
@@ -90,6 +102,7 @@ onMounted(() => {
   padding: 8px 15px;
   border-radius: 30px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
 }
 
 .music-button {
@@ -99,7 +112,17 @@ onMounted(() => {
   font-size: 1.8rem;
   color: #0d6efd;
   padding: 0;
-  margin-right: 10px;
+  margin: 0 5px;
+  transition: color 0.2s ease, transform 0.1s ease;
+}
+
+.music-button:hover {
+  color: #0a58ca;
+  transform: scale(1.1);
+}
+
+.music-button:active {
+  transform: scale(0.95);
 }
 
 .track-info {
@@ -116,6 +139,7 @@ onMounted(() => {
   
   .music-button {
     font-size: 1.5rem;
+    margin: 0 3px;
   }
   
   .track-info {
