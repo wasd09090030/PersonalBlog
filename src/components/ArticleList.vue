@@ -1,5 +1,5 @@
 <template>
-  <div class="article-list-page">
+  <div class="article-list-page" ref="articleListContainer">
     <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
       <h2 class="mb-0">{{ pageTitle }}</h2>
     </div>
@@ -89,10 +89,6 @@
         <div class="text-center text-muted mt-2">
           共 {{ filteredArticles.length }} 篇文章，第 {{ currentFilteredPage }} / {{ totalFilteredPages }} 页
         </div>
-      </div>
-      
-      <div v-else class="alert alert-info text-center" role="alert">
-        {{ route.query.search ? '没有找到匹配的文章' : '该分类下暂无文章' }}
       </div>
     </template>
     
@@ -184,6 +180,8 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import './ArticleList.styles.css';
 
+// 创建ref来引用ArticleList容器
+const articleListContainer = ref(null);
 const articles = ref([]);
 const error = ref(null);
 const route = useRoute();
@@ -276,14 +274,20 @@ const clearSearch = () => {
 const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 滚动到ArticleList容器的顶部而不是页面顶部
+    if (articleListContainer.value) {
+      articleListContainer.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 };
 
 const goToFilteredPage = (page) => {
   if (page >= 1 && page <= totalFilteredPages.value) {
     currentFilteredPage.value = page;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 滚动到ArticleList容器的顶部而不是页面顶部
+    if (articleListContainer.value) {
+      articleListContainer.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 };
 

@@ -338,11 +338,11 @@ onUnmounted(() => {
   background-color: var(--bs-body-bg, #ffffff);
   min-height: 100vh;
   padding: 2rem 0;
-  border-radius: 20px 20px 0 0;
   margin-top: -20px; /* 轻微重叠 */
   box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
   /* 大屏幕限制宽度为70% */
   max-width: 70%;
+  margin-top: auto;
   margin-left: auto;
   margin-right: auto;
 }
