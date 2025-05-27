@@ -70,6 +70,9 @@
           <div class="col-lg-4 col-xl-3 d-none d-lg-block animate__animated animate__fadeInUp" v-if="!isAdminRoute">
             <div class="sidebar-content">
               <PersonalInfo />
+                <div class="mobile-music-player-container">
+                 <MusicPlayer />
+             </div>
             </div>
           </div>
         </div>
@@ -81,8 +84,8 @@
       <PersonalInfo />
     </div>
 
-    <!-- 音乐播放器 -->
-    <div class="animate__animated animate__fadeInUp animate__delay-1s">
+    <!-- 移动端音乐播放器 - 独立定位 -->
+    <div class="mobile-music-player d-lg-none animate__animated animate__fadeInUp" v-if="!isAdminRoute">
       <MusicPlayer />
     </div>
 
@@ -388,12 +391,43 @@ main {
   height: fit-content;
 }
 
+/* MusicPlayer容器样式 */
+.music-player-container {
+  margin-top: 20px;
+}
+
+.mobile-music-player-container {
+  margin-top: 15px;
+  position: relative;
+  z-index: 999;
+}
+
 /* 移动端个人信息 */
 .mobile-personal-info {
   position: fixed;
-  bottom: 80px;
+  bottom: 50%;
   right: 20px;
   z-index: 1025;
+}
+
+/* 移动端音乐播放器 */
+.mobile-music-player {
+  position: fixed;
+  bottom: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1020;
+  padding: 8px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+/* 暗色主题下的移动端音乐播放器 */
+:global(.dark-theme) .mobile-music-player {
+  background-color: rgba(26, 26, 26, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* 响应式调整 */
@@ -411,6 +445,8 @@ main {
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
+    /* 为底部音乐播放器留出更多空间 */
+    padding-bottom: 130px;
   }
   
   main {
@@ -419,6 +455,53 @@ main {
   
   .sidebar-content {
     display: none;
+  }
+  
+  /* 移动端音乐播放器适配 */
+  .mobile-music-player {
+    bottom: 60px;
+    padding: 6px;
+  }
+  
+  .mobile-personal-info {
+    right: 15px;
+    bottom: 90px;
+  }
+}
+
+/* 小屏幕进一步优化 */
+@media (max-width: 576px) {
+  .mobile-music-player {
+    bottom: 50px;
+    padding: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .mobile-personal-info {
+    right: 15px;
+    bottom: 90px;
+  }
+  
+  .main-content {
+    padding-bottom: 110px;
+  }
+}
+
+/* 极小屏幕或横屏手机优化 */
+@media (max-width: 480px), (max-height: 600px) {
+  .mobile-music-player {
+    bottom: 40px;
+    padding: 4px;
+  }
+  
+  .mobile-personal-info {
+    right: 10px;
+    top: 80px;
+  }
+  
+  .main-content {
+    padding-bottom: 100px;
   }
 }
 

@@ -1,23 +1,23 @@
 <template>
-  <div class="article-editor">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="article-editor animate__animated animate__fadeIn">
+    <div class="d-flex justify-content-between align-items-center mb-4 animate__animated animate__slideInDown">
       <h2>{{ isEdit ? '编辑文章' : '创建文章' }}</h2>
-      <button class="btn btn-outline-secondary" @click="goBack">
+      <button class="btn btn-outline-secondary animate__animated animate__fadeInRight" @click="goBack">
         <i class="bi bi-arrow-left me-2"></i>返回
       </button>
     </div>
 
-    <div class="card">
+    <div class="card animate__animated animate__fadeInUp">
       <div class="card-body">
         <div v-if="loading" class="text-center py-5">
-          <div class="spinner-border text-primary" role="status"></div>
+          <div class="spinner-border text-primary animate__animated animate__pulse animate__infinite" role="status"></div>
         </div>
         
-        <form v-else @submit.prevent="saveArticle">          <div class="mb-3">
+        <form v-else @submit.prevent="saveArticle" class="animate__animated animate__fadeIn">          <div class="mb-3 animate__animated animate__fadeInUp animate__delay-0.1s">
             <label for="title" class="form-label">标题</label>
             <input 
               type="text" 
-              class="form-control" 
+              class="form-control form-input" 
               id="title" 
               v-model="articleForm.title" 
               required
@@ -25,7 +25,7 @@
           </div>
 
           <!-- 添加封面图URL输入 -->
-          <div class="mb-3">
+          <div class="mb-3 animate__animated animate__fadeInUp animate__delay-0.2s">
             <label for="coverImage" class="form-label">封面图片URL（可选）</label>
             <input 
               type="url" 
@@ -35,9 +35,8 @@
               placeholder="https://example.com/image.jpg"
             >
             <div class="form-text">请输入有效的图片URL地址</div>
-            
-            <!-- 封面图预览 -->
-            <div v-if="articleForm.coverImage && isValidImageUrl" class="mt-2">
+              <!-- 封面图预览 -->
+            <div v-if="articleForm.coverImage" class="mt-2">
               <small class="text-muted">封面图预览:</small>
               <div class="cover-preview mt-1">
                 <img 
@@ -45,11 +44,24 @@
                   alt="封面图预览" 
                   @error="handleImageError"
                   @load="handleImageLoad"
+                  crossorigin="anonymous"
                 />
               </div>
-            </div>
-            <div v-else-if="articleForm.coverImage && !isValidImageUrl" class="mt-2">
-              <small class="text-danger">图片加载失败，请检查URL是否正确</small>
+              <div v-if="!isValidImageUrl" class="mt-1">
+                <small class="text-warning">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  图片预览加载失败，但这不影响保存文章。可能的原因：
+                </small>
+                <ul class="small text-muted mt-1 mb-0">
+                  <li>图片服务器设置了跨域限制</li>
+                  <li>网络连接问题</li>
+                  <li>图片URL格式不正确</li>
+                </ul>
+                <small class="text-info">
+                  <i class="bi bi-info-circle me-1"></i>
+                  提示：如果图片在浏览器中能正常打开，通常在前端显示时也能正常加载
+                </small>
+              </div>
             </div>
           </div>
           
@@ -84,7 +96,7 @@
           
           <div class="d-flex justify-content-between">
             <button type="button" class="btn btn-outline-secondary" @click="goBack">取消</button>
-            <button type="submit" class="btn btn-primary" :disabled="isSaving">
+            <button type="submit" class="btn btn-primary action-btn" :disabled="isSaving">
               <span v-if="isSaving" class="spinner-border spinner-border-sm me-2" role="status"></span>
               保存
             </button>
@@ -180,6 +192,25 @@ const handleContentChange = (text) => {
   articleForm.value.contentMarkdown = text;
 };
 
+// 验证图片URL是否有效
+const validateImageUrl = (url) => {
+  if (!url) {
+    isValidImageUrl.value = false;
+    return;
+  }
+  
+  const img = new Image();
+  img.onload = () => {
+    isValidImageUrl.value = true;
+  };
+  img.onerror = () => {
+    isValidImageUrl.value = false;
+  };
+  // 设置 crossOrigin 属性以处理 CORS 问题
+  img.crossOrigin = 'anonymous';
+  img.src = url;
+};
+
 // 处理图片加载成功
 const handleImageLoad = () => {
   isValidImageUrl.value = true;
@@ -190,10 +221,15 @@ const handleImageError = () => {
   isValidImageUrl.value = false;
 };
 
-// 监听封面图URL变化
+// 监听封面图URL变化，实时验证
 watch(() => articleForm.value.coverImage, (newUrl) => {
   if (!newUrl) {
     isValidImageUrl.value = false;
+  } else {
+    // 延迟验证，避免用户输入时频繁验证
+    setTimeout(() => {
+      validateImageUrl(newUrl);
+    }, 500);
   }
 });
 
@@ -207,15 +243,11 @@ const fetchArticle = async (id) => {
       contentMarkdown: article.contentMarkdown || article.content, // 兼容没有markdown字段的旧数据
       coverImage: article.coverImage || '', // 封面图URL
       category: article.category || 'study', // 兼容没有类别字段的旧数据
-    };
-    // 如果有封面图，检查其有效性
+    };    // 如果有封面图，检查其有效性
     if (article.coverImage) {
       // 延迟检查图片加载状态
       setTimeout(() => {
-        const img = new Image();
-        img.onload = () => { isValidImageUrl.value = true; };
-        img.onerror = () => { isValidImageUrl.value = false; };
-        img.src = article.coverImage;
+        validateImageUrl(article.coverImage);
       }, 100);
     }
   } catch (error) {
@@ -276,6 +308,59 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 表单输入动画 */
+.form-input {
+  transition: all 0.3s ease;
+  border: 2px solid #ced4da;
+}
+
+.form-input:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+  border-color: #86b7fe;
+}
+
+/* 按钮动画 */
+.action-btn {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.action-btn:hover::before {
+  left: 100%;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.action-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Markdown编辑器容器动画 */
+.markdown-editor-container {
+  transition: all 0.3s ease;
+}
+
+.markdown-editor-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
 /* 封面图预览样式 */
 .cover-preview {
   max-width: 300px;
