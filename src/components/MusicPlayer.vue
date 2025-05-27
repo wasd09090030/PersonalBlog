@@ -1,17 +1,14 @@
 <template>
-  <div class="music-player">
-    <button @click="playPrevTrack" class="music-button" title="上一首">
+  <div class="music-player animate__animated animate__fadeInLeft">
+    <button @click="playPrevTrack" class="music-button animate__animated animate__pulse animate__infinite" title="上一首">
       <i class="bi bi-skip-backward-circle"></i>
     </button>
-    <button @click="togglePlay" class="music-button" :title="isPlaying ? '暂停音乐' : '播放音乐'">
-      <i class="bi" :class="isPlaying ? 'bi-pause-circle' : 'bi-play-circle'"></i>
+    <button @click="togglePlay" class="music-button main-button" :class="{ 'playing': isPlaying }" :title="isPlaying ? '暂停音乐' : '播放音乐'">
+      <i class="bi animate__animated animate__heartBeat animate__infinite" :class="isPlaying ? 'bi-pause-circle' : 'bi-play-circle'"></i>
     </button>
-    <button @click="playNextTrack" class="music-button" title="下一首">
+    <button @click="playNextTrack" class="music-button animate__animated animate__pulse animate__infinite" title="下一首">
       <i class="bi bi-skip-forward-circle"></i>
     </button>
-    <div v-if="isPlaying" class="track-info">
-      <span>当前播放: {{ currentTrack.name }}</span>
-    </div>
     <audio ref="audioPlayer" @ended="playNextTrack"></audio>
   </div>
 </template>
@@ -103,6 +100,12 @@ onMounted(() => {
   border-radius: 30px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.music-player:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
 .music-button {
@@ -113,21 +116,43 @@ onMounted(() => {
   color: #0d6efd;
   padding: 0;
   margin: 0 5px;
-  transition: color 0.2s ease, transform 0.1s ease;
+  transition: all 0.3s ease;
+  border-radius: 50%;
 }
 
 .music-button:hover {
   color: #0a58ca;
-  transform: scale(1.1);
+  transform: scale(1.2) rotate(10deg);
+  background-color: rgba(13, 110, 253, 0.1);
+  padding: 5px;
 }
 
 .music-button:active {
-  transform: scale(0.95);
+  transform: scale(0.9);
+}
+
+.music-button.main-button.playing {
+  animation: pulse 2s infinite;
+  color: #28a745;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
 .track-info {
   font-size: 0.9rem;
   color: #6c757d;
+  margin-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.track-info span {
+  display: inline-block;
+  animation-duration: 2s !important;
 }
 
 @media (max-width: 576px) {

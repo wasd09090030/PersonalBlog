@@ -1,29 +1,29 @@
 <template>
   <div class="article-detail-page">
     <div v-if="loading" class="text-center my-5">
-      <div class="spinner-border text-primary" role="status">
+      <div class="spinner-border text-primary animate__animated animate__pulse animate__infinite" role="status">
         <span class="visually-hidden">加载中...</span>
       </div>
     </div>
 
-    <div v-else-if="error" class="alert alert-danger" role="alert">
+    <div v-else-if="error" class="alert alert-danger animate__animated animate__shakeX" role="alert">
       加载文章失败: {{ error.message }}
     </div>
 
-    <div v-else-if="article" class="article-container card shadow-sm">
-      <div class="card-body">        <div class="article-header mb-4">
+    <div v-else-if="article" class="article-container card shadow-sm animate__animated animate__fadeInUp">
+      <div class="card-body">        <div class="article-header mb-4 animate__animated animate__fadeInDown">
           <h1 class="article-title">{{ article.title }}</h1>
           <div class="article-meta">
-            <span class="badge" :class="getCategoryBadgeClass(article.category)">
+            <span class="badge animate__animated animate__bounceIn animate__delay-0.5s" :class="getCategoryBadgeClass(article.category)">
               {{ getCategoryName(article.category) }}
             </span>
-            <span class="badge bg-secondary ms-2">{{ formatDate(article.createdAt) }}</span>
-            <span v-if="article.updatedAt && article.updatedAt !== article.createdAt" class="ms-2 text-muted">
+            <span class="badge bg-secondary ms-2 animate__animated animate__bounceIn animate__delay-0.7s">{{ formatDate(article.createdAt) }}</span>
+            <span v-if="article.updatedAt && article.updatedAt !== article.createdAt" class="ms-2 text-muted animate__animated animate__fadeIn animate__delay-1s">
               最后更新: {{ formatDate(article.updatedAt) }}
             </span>
           </div>
         </div>
-          <div class="article-actions mb-4">
+          <div class="article-actions mb-4 animate__animated animate__fadeInRight">
           <router-link to="/" class="btn btn-outline-secondary">
             返回列表
           </router-link>

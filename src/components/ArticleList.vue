@@ -21,7 +21,8 @@
         <div 
           v-for="(article, index) in paginatedFilteredArticles" 
           :key="article.id" 
-          :class="['article-card', { 'article-card-reverse': (currentFilteredIndex + index + 1) % 2 === 0 }]"
+          :class="['article-card', 'animate__animated', 'animate__fadeInUp', { 'article-card-reverse': (currentFilteredIndex + index + 1) % 2 === 0 }]"
+          :style="{ animationDelay: `${index * 0.1}s` }"
         >
           <!-- 封面图片区域 -->
           <div class="article-image-section">
@@ -94,11 +95,11 @@
     
     <!-- 默认显示所有文章 -->
     <template v-else>
-      <div v-if="paginatedArticles.length" class="articles-container">
-        <div 
+      <div v-if="paginatedArticles.length" class="articles-container">        <div 
           v-for="(article, index) in paginatedArticles" 
           :key="article.id" 
-          :class="['article-card', { 'article-card-reverse': (currentIndex + index + 1) % 2 === 0 }]"
+          :class="['article-card', 'animate__animated', 'animate__fadeInUp', { 'article-card-reverse': (currentIndex + index + 1) % 2 === 0 }]"
+          :style="{ animationDelay: `${index * 0.1}s` }"
         >
           <!-- 封面图片区域 -->
           <div class="article-image-section">
@@ -139,36 +140,35 @@
             </router-link>
           </div>
         </div>      </div>
-      
-      <!-- 分页控件 - 所有文章 -->
-      <div v-if="totalPages > 1" class="pagination-container mt-4">
+        <!-- 分页控件 - 所有文章 -->
+      <div v-if="totalPages > 1" class="pagination-container mt-4 animate__animated animate__fadeInUp">
         <nav aria-label="文章分页">
           <ul class="pagination justify-content-center">
             <li class="page-item" :class="{ disabled: currentPage === 1 }">
-              <button class="page-link" @click="goToPage(currentPage - 1)" :disabled="currentPage === 1">
+              <button class="page-link page-btn" @click="goToPage(currentPage - 1)" :disabled="currentPage === 1">
                 <i class="bi bi-chevron-left"></i>
               </button>
             </li>
             
             <li v-for="page in getPageNumbers()" :key="page" class="page-item" :class="{ active: page === currentPage }">
               <button v-if="page === '...'" class="page-link disabled">...</button>
-              <button v-else class="page-link" @click="goToPage(page)">{{ page }}</button>
+              <button v-else class="page-link page-btn" @click="goToPage(page)">{{ page }}</button>
             </li>
             
             <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-              <button class="page-link" @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages">
+              <button class="page-link page-btn" @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages">
                 <i class="bi bi-chevron-right"></i>
               </button>
             </li>
           </ul>
         </nav>
         
-        <div class="text-center text-muted mt-2">
+        <div class="text-center text-muted mt-2 animate__animated animate__fadeIn animate__delay-0.5s">
           共 {{ articles.length }} 篇文章，第 {{ currentPage }} / {{ totalPages }} 页
         </div>
       </div>
       
-      <div v-else class="alert alert-info text-center" role="alert">
+      <div v-else class="alert alert-info text-center animate__animated animate__fadeIn" role="alert">
         暂无文章
       </div>
     </template>

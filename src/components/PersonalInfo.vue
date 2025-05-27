@@ -1,34 +1,36 @@
-<template>
-  <!-- 桌面端侧边栏 -->
-  <div class="desktop-sidebar d-none d-lg-block">
+<template>  <!-- 桌面端侧边栏 -->
+  <div class="desktop-sidebar d-none d-lg-block animate__animated animate__fadeInLeft">
     <div class="sidebar-content">
       <div class="user-profile text-center">
-        <div class="avatar-container">
+        <div class="avatar-container animate__animated animate__bounceIn animate__delay-1s">
           <img src="../assets/icon/Master.png" alt="用户头像" class="avatar-img">
         </div>
-        <h4 class="user-name mt-3">WASD09090030</h4>
+        <h4 class="user-name mt-3 animate__animated animate__fadeInUp animate__delay-1.5s">WASD09090030</h4>
       </div>
       
       <div class="navigation-buttons">
-        <button @click="navigateTo('study')" class="nav-button">
+        <button @click="navigateTo('study')" class="nav-button animate__animated animate__fadeInRight animate__delay-2s">
           <i class="bi bi-book me-2"></i>
           <span>学习</span>
         </button>
-        <button @click="navigateTo('game')" class="nav-button">
+        <button @click="navigateTo('game')" class="nav-button animate__animated animate__fadeInRight animate__delay-2.2s">
           <i class="bi bi-controller me-2"></i>
           <span>游戏</span>
         </button>
-        <button @click="navigateTo('work')" class="nav-button">
+        <button @click="navigateTo('work')" class="nav-button animate__animated animate__fadeInRight animate__delay-2.4s">
           <i class="bi bi-briefcase me-2"></i>
           <span>个人作品</span>
         </button>
       </div>
-      
-      <div class="contact-info mt-4">
+        <div class="contact-info mt-4 animate__animated animate__fadeInUp animate__delay-2.6s">
         <h5>联系我：</h5>
-        <div class="email-container">
-          <i class="bi bi-envelope me-2"></i>
-          <span>xxxxx@163.com</span>
+        <div class="contact-icons">
+          <a href="mailto:qq86280630qq@163.com" class="contact-icon email-icon" title="发送邮件: qq86280630qq@163.com">
+            <i class="bi bi-envelope"></i>
+          </a>
+          <a href="https://github.com/WASD09090030" target="_blank" class="contact-icon github-icon" title="访问GitHub: WASD09090030">
+            <i class="bi bi-github"></i>
+          </a>
         </div>
       </div>
     </div>
@@ -60,12 +62,15 @@
             <span>个人作品</span>
           </button>
         </div>
-        
-        <div class="contact-info mt-4">
+          <div class="contact-info mt-4">
           <h5>联系我：</h5>
-          <div class="email-container">
-            <i class="bi bi-envelope me-2"></i>
-            <span>xxxxx@163.com</span>
+          <div class="contact-icons">
+            <a href="mailto:qq86280630qq@163.com" class="contact-icon email-icon" title="发送邮件: qq86280630qq@163.com">
+              <i class="bi bi-envelope"></i>
+            </a>
+            <a href="https://github.com/WASD09090030" target="_blank" class="contact-icon github-icon" title="访问GitHub: WASD09090030">
+              <i class="bi bi-github"></i>
+            </a>
           </div>
         </div>
       </div>
@@ -308,25 +313,173 @@ onBeforeUnmount(() => {
   font-size: 1rem;
 }
 
-.email-container {
+.contact-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.contact-icon {
   display: flex;
   align-items: center;
-  padding: 0.5rem;
-  background-color: var(--bs-light);
-  border-radius: 8px;
-  color: var(--bs-secondary);
-  font-size: 0.9rem;
-  border: 1px solid var(--bs-border-color);
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-[data-bs-theme="dark"] .email-container {
-  background-color: var(--bs-gray-800);
-  border-color: var(--bs-border-color-translucent);
+.contact-icon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  transform: scale(0);
+  transition: transform 0.3s ease;
 }
 
-.email-container i {
-  color: var(--bs-primary);
-  font-size: 1rem;
+.contact-icon:hover::before {
+  transform: scale(1);
+  animation: ripple 0.6s ease-out;
+}
+
+.contact-icon i {
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+  z-index: 2;
+  position: relative;
+}
+
+/* 邮箱图标样式 */
+.email-icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.email-icon:hover {
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+  color: white;
+}
+
+.email-icon:hover i {
+  animation: emailBounce 0.6s ease-in-out;
+}
+
+/* GitHub图标样式 */
+.github-icon {
+  background: linear-gradient(135deg, #24292e 0%, #586069 100%);
+  color: white;
+}
+
+.github-icon:hover {
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 10px 25px rgba(36, 41, 46, 0.4);
+  color: white;
+  animation: githubPulse 1.5s infinite;
+}
+
+.github-icon:hover i {
+  animation: githubRotate 0.6s ease-in-out;
+}
+
+/* 深色主题适配 */
+[data-bs-theme="dark"] .contact-icon {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+[data-bs-theme="dark"] .email-icon:hover {
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.6);
+}
+
+[data-bs-theme="dark"] .github-icon:hover {
+  box-shadow: 0 10px 25px rgba(36, 41, 46, 0.6);
+}
+
+/* 动画效果 */
+@keyframes emailBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(-15deg); }
+  50% { transform: translateY(-4px) rotate(10deg); }
+  75% { transform: translateY(-6px) rotate(-5deg); }
+}
+
+@keyframes githubRotate {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.15); }
+  50% { transform: rotate(180deg) scale(1); }
+  75% { transform: rotate(270deg) scale(1.15); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* 脉冲效果 */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1), 0 0 0 0 rgba(102, 126, 234, 0.7);
+  }
+  70% {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1), 0 0 0 10px rgba(102, 126, 234, 0);
+  }
+  100% {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1), 0 0 0 0 rgba(102, 126, 234, 0);
+  }
+}
+
+@keyframes githubPulse {
+  0% {
+    box-shadow: 0 10px 25px rgba(36, 41, 46, 0.4), 0 0 0 0 rgba(36, 41, 46, 0.7);
+  }
+  70% {
+    box-shadow: 0 10px 25px rgba(36, 41, 46, 0.4), 0 0 0 10px rgba(36, 41, 46, 0);
+  }
+  100% {
+    box-shadow: 0 10px 25px rgba(36, 41, 46, 0.4), 0 0 0 0 rgba(36, 41, 46, 0);
+  }
+}
+
+/* 点击效果 */
+.contact-icon:active {
+  transform: translateY(-2px) scale(0.95);
+}
+
+/* 移动端适配 */
+@media (max-width: 576px) {
+  .contact-icons {
+    gap: 1rem;
+  }
+  
+  .contact-icon {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .contact-icon i {
+    font-size: 1.3rem;
+  }
 }
 
 /* 移动端特殊样式 */

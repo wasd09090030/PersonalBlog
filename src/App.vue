@@ -1,7 +1,7 @@
 <template>
   <div id="app" :class="['min-vh-100', isDarkMode ? 'dark-theme' : 'light-theme']">
     <!-- 导航栏 -->
-    <nav :class="['navbar navbar-expand-lg fixed-top transition-all', isDarkMode ? 'navbar-dark' : 'navbar-light', navbarClass]" ref="navbar">
+    <nav :class="['navbar navbar-expand-lg fixed-top transition-all animate__animated', isDarkMode ? 'navbar-dark' : 'navbar-light', navbarClass, navbarAnimationClass]" ref="navbar">
       <div class="container-fluid d-flex align-items-center">
         <router-link to="/" class="navbar-brand">我的个人博客</router-link>
         
@@ -55,12 +55,19 @@
           <!-- 文章内容区域 -->
           <div class="col-12 col-lg-8 col-xl-9" :class="{ 'col-lg-12 col-xl-12': isAdminRoute }">
             <main>
-              <router-view></router-view> <!-- 路由匹配的组件将在这里渲染 -->
+              <!-- 路由切换动画 -->
+              <transition
+                enter-active-class="animate__animated animate__fadeInRight"
+                leave-active-class="animate__animated animate__fadeOutLeft"
+                mode="out-in"
+              >
+                <router-view></router-view> <!-- 路由匹配的组件将在这里渲染 -->
+              </transition>
             </main>
           </div>
           
           <!-- 侧边栏个人信息 - 大屏显示 -->
-          <div class="col-lg-4 col-xl-3 d-none d-lg-block" v-if="!isAdminRoute">
+          <div class="col-lg-4 col-xl-3 d-none d-lg-block animate__animated animate__fadeInUp" v-if="!isAdminRoute">
             <div class="sidebar-content">
               <PersonalInfo />
             </div>
@@ -70,12 +77,14 @@
     </div>
     
     <!-- 移动端个人信息按钮 -->
-    <div class="mobile-personal-info d-lg-none" v-if="!isAdminRoute">
+    <div class="mobile-personal-info d-lg-none animate__animated animate__fadeInRight" v-if="!isAdminRoute">
       <PersonalInfo />
     </div>
 
     <!-- 音乐播放器 -->
-    <MusicPlayer />
+    <div class="animate__animated animate__fadeInUp animate__delay-1s">
+      <MusicPlayer />
+    </div>
 
     <!-- Toast通知组件 -->
     <Toast />
@@ -115,6 +124,12 @@ const navbarClass = computed(() => {
     'navbar-hidden': !shouldShow,
     'navbar-visible': shouldShow
   };
+});
+
+// 导航栏动画类
+const navbarAnimationClass = computed(() => {
+  const shouldShow = isNavbarVisible.value || mouseAtTop.value || isAtTop.value;
+  return shouldShow ? 'animate__slideInDown' : 'animate__slideOutUp';
 });
 
 // 处理滚动事件

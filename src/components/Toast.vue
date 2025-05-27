@@ -1,26 +1,28 @@
 <template>
   <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
-    <div 
-      v-for="(toast, index) in toasts" 
-      :key="index" 
-      class="toast show" 
-      role="alert" 
-      aria-live="assertive" 
-      aria-atomic="true"
-      :class="`bg-${toast.type} text-white`"
-    >
-      <div class="d-flex">
-        <div class="toast-body">
-          {{ toast.message }}
+    <transition-group name="toast" tag="div">
+      <div 
+        v-for="(toast, index) in toasts" 
+        :key="toast.id" 
+        class="toast show animate__animated animate__fadeInRight" 
+        role="alert" 
+        aria-live="assertive" 
+        aria-atomic="true"
+        :class="`bg-${toast.type} text-white`"
+      >
+        <div class="d-flex">
+          <div class="toast-body">
+            {{ toast.message }}
+          </div>
+          <button 
+            type="button" 
+            class="btn-close btn-close-white me-2 m-auto animate__animated animate__pulse animate__infinite" 
+            @click="removeToast(index)"
+            aria-label="关闭"
+          ></button>
         </div>
-        <button 
-          type="button" 
-          class="btn-close btn-close-white me-2 m-auto" 
-          @click="removeToast(index)"
-          aria-label="关闭"
-        ></button>
       </div>
-    </div>
+    </transition-group>
   </div>
 </template>
 
@@ -106,9 +108,42 @@ export default {
 <style scoped>
 .toast {
   min-width: 250px;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.toast:hover {
+  transform: translateX(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .toast-body {
   font-size: 0.9rem;
+}
+
+/* Vue transition-group 动画 */
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.5s ease;
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.toast-move {
+  transition: transform 0.5s ease;
+}
+
+/* 关闭按钮动画 */
+.btn-close:hover {
+  transform: scale(1.1) rotate(90deg);
+  transition: transform 0.2s ease;
 }
 </style>
