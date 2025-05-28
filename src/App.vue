@@ -30,6 +30,7 @@
                 <li><a class="dropdown-item" href="#" @click="filterByCategory('study')">学习</a></li>
                 <li><a class="dropdown-item" href="#" @click="filterByCategory('game')">游戏</a></li>
                 <li><a class="dropdown-item" href="#" @click="filterByCategory('work')">个人作品</a></li>
+                <li><a class="dropdown-item" href="#" @click="filterByCategory('resource')">资源分享</a></li>
               </ul>
             </li>
             <li class="nav-item">

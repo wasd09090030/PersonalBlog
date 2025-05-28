@@ -8,10 +8,14 @@
 
     <div v-else-if="error" class="alert alert-danger animate__animated animate__shakeX" role="alert">
       加载文章失败: {{ error.message }}
-    </div>
-
-    <div v-else-if="article" class="article-container card shadow-sm animate__animated animate__fadeInUp">
-      <div class="card-body">        <div class="article-header mb-4 animate__animated animate__fadeInDown">
+    </div>    <div v-else-if="article" class="article-container card shadow-sm animate__animated animate__fadeInUp">
+      <div class="card-body">
+        <!-- 封面图片 -->
+        <div v-if="article.coverImage" class="article-cover mb-4 animate__animated animate__fadeIn">
+          <img :src="article.coverImage" :alt="article.title" class="cover-image" />
+        </div>
+        
+        <div class="article-header mb-4 animate__animated animate__fadeInDown">
           <h1 class="article-title">{{ article.title }}</h1>
           <div class="article-meta">
             <span class="badge animate__animated animate__bounceIn animate__delay-0.5s" :class="getCategoryBadgeClass(article.category)">
@@ -25,6 +29,7 @@
         </div>
           <div class="article-actions mb-4 animate__animated animate__fadeInRight">
           <router-link to="/" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>
             返回列表
           </router-link>
         </div>
@@ -32,6 +37,15 @@
         <div class="article-content">
           <!-- eslint-disable-next-line vue/no-v-html -->
           <div v-html="article.content" class="article-content-html"></div>
+        </div>        <!-- 评论和点赞区域 -->
+        <CommentSection :article-id="article.id" />
+        
+        <!-- 底部返回按钮 -->
+        <div class="article-bottom-actions mt-5 pt-4 border-top text-center animate__animated animate__fadeInUp">
+          <router-link to="/" class="btn btn-primary btn-lg">
+            <i class="bi bi-arrow-left me-2"></i>
+            返回文章列表
+          </router-link>
         </div>
       </div>
     </div>
@@ -45,6 +59,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import CommentSection from './CommentSection.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -71,6 +86,7 @@ function getCategoryName(category) {
     'study': '学习',
     'game': '游戏',
     'work': '个人作品',
+    'resource': '资源分享',
     'other': '其他'
   };
   return categoryMap[category] || '未分类';
@@ -82,6 +98,7 @@ function getCategoryBadgeClass(category) {
     'study': 'bg-primary',
     'game': 'bg-warning text-dark',
     'work': 'bg-success',
+    'resource': 'bg-info text-dark',
     'other': 'bg-secondary'
   };
   return classMap[category] || 'bg-secondary';
@@ -126,6 +143,28 @@ onMounted(() => {
   margin: 0 auto;
   background-color: #fff;
   border-radius: 0.5rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 封面图片样式 */
+.article-cover {
+  width: 100%;
+  max-height: 400px;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.cover-image:hover {
+  transform: scale(1.02);
 }
 
 .article-title {
@@ -133,11 +172,35 @@ onMounted(() => {
   margin-bottom: 0.5rem;
   font-size: 2rem;
   font-weight: 700;
+  transition: color 0.3s ease;
 }
 
 .article-meta {
   color: #6c757d;
   margin-bottom: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+/* 底部操作区域样式 */
+.article-bottom-actions {
+  border-top: 2px solid #e9ecef;
+  background: linear-gradient(135deg, #f8f9fa, #ffffff);
+  border-radius: 0 0 0.5rem 0.5rem;
+  margin: 0 -1.25rem -1.25rem -1.25rem;
+  padding: 2rem 1.25rem;
+}
+
+.article-bottom-actions .btn {
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  border-radius: 2rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
+}
+
+.article-bottom-actions .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3);
 }
 
 /* 文章内容样式 */
@@ -145,6 +208,7 @@ onMounted(() => {
   line-height: 1.8;
   font-size: 1.1rem;
   color: #333;
+  transition: color 0.3s ease;
 }
 
 /* 富文本内容样式 */
@@ -206,5 +270,60 @@ onMounted(() => {
 
 .article-content-html ::v-deep(a:hover) {
   text-decoration: underline;
+}
+
+/* 暗色主题支持 */
+[data-bs-theme="dark"] .article-container {
+  background-color: var(--bs-dark);
+  color: #ffffff;
+}
+
+[data-bs-theme="dark"] .article-cover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+[data-bs-theme="dark"] .article-title {
+  color: #ffffff;
+}
+
+[data-bs-theme="dark"] .article-meta {
+  color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .article-bottom-actions {
+  border-top-color: #495057;
+  background: linear-gradient(135deg, #2d3748, #1a1a1a);
+}
+
+[data-bs-theme="dark"] .article-content-html {
+  color: #dee2e6;
+}
+
+[data-bs-theme="dark"] .article-content-html ::v-deep(h1),
+[data-bs-theme="dark"] .article-content-html ::v-deep(h2),
+[data-bs-theme="dark"] .article-content-html ::v-deep(h3) {
+  color: #ffffff;
+}
+
+[data-bs-theme="dark"] .article-content-html ::v-deep(p) {
+  color: #dee2e6;
+}
+
+[data-bs-theme="dark"] .article-content-html ::v-deep(pre) {
+  background-color: #2d3748;
+  color: #e2e8f0;
+}
+
+[data-bs-theme="dark"] .article-content-html ::v-deep(blockquote) {
+  border-left-color: #6c757d;
+  color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .article-content-html ::v-deep(a) {
+  color: #60a5fa;
+}
+
+[data-bs-theme="dark"] .article-content-html ::v-deep(a:hover) {
+  color: #93c5fd;
 }
 </style>

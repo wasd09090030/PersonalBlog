@@ -53,6 +53,11 @@ const routes = [
         name: 'ArticleEditorEdit',
         component: ArticleEditor,
         props: true
+      },
+      {
+        path: 'comments',
+        name: 'CommentManager',
+        component: () => import('./views/admin/CommentManager.vue')
       }
     ]
   }

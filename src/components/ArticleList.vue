@@ -242,7 +242,8 @@ const getCategoryName = (category) => {
   const categoryMap = {
     'study': '学习',
     'game': '游戏',
-    'work': '个人作品'
+    'work': '个人作品',
+    'resource': '资源分享'
   };
   return categoryMap[category] || '其他';
 };
@@ -252,7 +253,8 @@ const getCategoryClass = (category) => {
   const categoryClassMap = {
     'study': 'category-study',
     'game': 'category-game', 
-    'work': 'category-work'
+    'work': 'category-work',
+    'resource': 'category-resource'
   };
   return categoryClassMap[category] || 'category-other';
 };

@@ -43,6 +43,30 @@
         </div>
       </div>
       
+      <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">评论统计</h5>
+            <div v-if="loading" class="text-center">
+              <div class="spinner-border text-primary" role="status"></div>
+            </div>
+            <div v-else>
+              <div class="d-flex align-items-center mb-2">
+                <span class="display-4 me-2">{{ commentStats.total }}</span>
+                <span class="text-muted">条</span>
+              </div>
+              <div class="text-warning mb-2" v-if="commentStats.pending > 0">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                {{ commentStats.pending }} 条待审核
+              </div>
+            </div>
+            <router-link to="/admin/comments" class="btn btn-sm btn-outline-primary mt-3">
+              管理评论
+            </router-link>
+          </div>
+        </div>
+      </div>
+      
       <div class="col-md-12 col-lg-6 mb-4">
         <div class="card shadow-sm h-100">
           <div class="card-body">
@@ -81,6 +105,7 @@ const router = useRouter();
 const loading = ref(true);
 const articleCount = ref(0);
 const latestArticles = ref([]);
+const commentStats = ref({ total: 0, pending: 0 });
 
 const formatDate = (dateString) => {
   if (!dateString) return '-';
@@ -94,20 +119,40 @@ const createArticle = () => {
 const fetchDashboardData = async () => {
   loading.value = true;
   try {
-    // 获取所有文章
-    const articles = await articleService.getArticles();
-    
-    // 设置文章计数
-    articleCount.value = articles.length;
-    
-    // 获取最新的5篇文章
-    latestArticles.value = articles
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      .slice(0, 5);
+    // 获取文章统计
+    const articlesResponse = await articleService.getArticles();
+    if (articlesResponse) {
+      // 后端直接返回文章数组，不是包装在articles字段中
+      articleCount.value = Array.isArray(articlesResponse) ? articlesResponse.length : 0;
+      latestArticles.value = Array.isArray(articlesResponse) ? articlesResponse.slice(0, 5) : [];
+    }
+
+    // 获取评论统计
+    await fetchCommentStats();
   } catch (error) {
     console.error('获取仪表板数据失败:', error);
   } finally {
     loading.value = false;
+  }
+};
+
+const fetchCommentStats = async () => {
+  try {
+    // 获取所有评论
+    const allCommentsResponse = await fetch('http://localhost:3000/comments/admin/all');
+    if (allCommentsResponse.ok) {
+      const allComments = await allCommentsResponse.json();
+      commentStats.value.total = allComments.length;
+    }
+
+    // 获取待审核评论
+    const pendingCommentsResponse = await fetch('http://localhost:3000/comments/admin/pending');
+    if (pendingCommentsResponse.ok) {
+      const pendingComments = await pendingCommentsResponse.json();
+      commentStats.value.pending = pendingComments.length;
+    }
+  } catch (error) {
+    console.error('获取评论统计失败:', error);
   }
 };
 

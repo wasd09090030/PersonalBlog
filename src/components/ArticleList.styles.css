@@ -110,6 +110,10 @@
   color: #000 !important;
 }
 
+.category-resource {
+  background: linear-gradient(135deg, #17a2b8, #138496);
+}
+
 .category-other {
   background: linear-gradient(135deg, #6c757d, #495057);
 }

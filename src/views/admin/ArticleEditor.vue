@@ -64,8 +64,7 @@
               </div>
             </div>
           </div>
-          
-          <!-- 添加文章类别选择 -->
+            <!-- 添加文章类别选择 -->
           <div class="mb-3">
             <label for="category" class="form-label">文章类别</label>
             <select 
@@ -77,6 +76,7 @@
               <option value="study">学习</option>
               <option value="game">游戏</option>
               <option value="work">个人作品</option>
+              <option value="resource">资源分享</option>
               <option value="other">其他</option>
             </select>
           </div>
