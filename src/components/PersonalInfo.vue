@@ -2,27 +2,45 @@
   <div class="desktop-sidebar d-none d-lg-block animate__animated animate__fadeInLeft">
     <div class="sidebar-content">
       <div class="user-profile text-center">
-        <div class="avatar-container animate__animated animate__bounceIn animate__delay-1s">
+        <div class="avatar-container animate__animated animate__bounceIn animate__delay-1s" @click="triggerAvatarEffect">
           <img src="../assets/icon/Master.png" alt="用户头像" class="avatar-img">
+          <div class="avatar-overlay" :class="{ 'active': avatarClicked }">
+            <i class="bi bi-stars"></i>
+          </div>
         </div>
         <h4 class="user-name mt-3 animate__animated animate__fadeInUp animate__delay-1.5s">WASD09090030</h4>
+        <div class="user-status animate__animated animate__fadeIn animate__delay-1.7s">
+          <span class="status-dot" :class="statusClass"></span>
+          <span class="status-text">{{ currentStatus }}</span>
+        </div>
       </div>
       
-      <div class="navigation-buttons">
-        <button @click="navigateTo('study')" class="nav-button animate__animated animate__fadeInRight animate__delay-2s">
-          <i class="bi bi-book me-2"></i>
-          <span>学习</span>
-        </button>
-        <button @click="navigateTo('game')" class="nav-button animate__animated animate__fadeInRight animate__delay-2.2s">
-          <i class="bi bi-controller me-2"></i>
-          <span>游戏</span>
-        </button>
-        <button @click="navigateTo('work')" class="nav-button animate__animated animate__fadeInRight animate__delay-2.4s">
-          <i class="bi bi-briefcase me-2"></i>
-          <span>个人作品</span>
-        </button>
+      <!-- 实时时钟 -->
+      <div class="live-clock animate__animated animate__fadeInUp animate__delay-2s">
+        <div class="clock-display">
+          <i class="bi bi-clock me-2"></i>
+          {{ currentTime }}
+        </div>
+        <div class="date-display">{{ currentDate }}</div>
       </div>
-        <div class="contact-info mt-4 animate__animated animate__fadeInUp animate__delay-2.6s">
+
+      <!-- 个人技能展示 -->
+      <div class="skills-section animate__animated animate__fadeInUp animate__delay-2.2s">
+        <h5 class="section-title">
+          <i class="bi bi-gear me-2"></i>技能等级
+        </h5>
+        <div class="skills-list">
+          <div v-for="skill in skills" :key="skill.name" class="skill-item" @click="animateSkill(skill)">
+            <div class="skill-header">
+              <span class="skill-name">{{ skill.name }}</span>
+              <span class="skill-level">{{ skill.level }}%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" :style="{ width: skill.level + '%' }" :class="skill.color"></div>
+            </div>
+          </div>
+        </div>
+      </div>      <div class="contact-info mt-4 animate__animated animate__fadeInUp animate__delay-2.8s">
         <h5>联系我：</h5>
         <div class="contact-icons">
           <a href="mailto:qq86280630qq@163.com" class="contact-icon email-icon" title="发送邮件: qq86280630qq@163.com">
@@ -37,32 +55,50 @@
   </div>
 
   <!-- 移动端浮动按钮 -->
-  <div class="mobile-personal-info d-lg-none">
-    <!-- 侧边栏内容 -->
+  <div class="mobile-personal-info d-lg-none">    <!-- 侧边栏内容 -->
     <div class="personal-info-sidebar" v-show="!isCollapsed">
       <div class="sidebar-content">
         <div class="user-profile text-center">
-          <div class="avatar-container">
+          <div class="avatar-container" @click="triggerAvatarEffect">
             <img src="../assets/icon/Master.png" alt="用户头像" class="avatar-img">
+            <div class="avatar-overlay" :class="{ 'active': avatarClicked }">
+              <i class="bi bi-stars"></i>
+            </div>
           </div>
           <h4 class="user-name mt-3">WASD09090030</h4>
+          <div class="user-status">
+            <span class="status-dot" :class="statusClass"></span>
+            <span class="status-text">{{ currentStatus }}</span>
+          </div>
         </div>
         
-        <div class="navigation-buttons">
-          <button @click="navigateTo('study')" class="nav-button">
-            <i class="bi bi-book me-2"></i>
-            <span>学习</span>
-          </button>
-          <button @click="navigateTo('game')" class="nav-button">
-            <i class="bi bi-controller me-2"></i>
-            <span>游戏</span>
-          </button>
-          <button @click="navigateTo('work')" class="nav-button">
-            <i class="bi bi-briefcase me-2"></i>
-            <span>个人作品</span>
-          </button>
+        <!-- 移动端也包含同样的功能 -->
+        <div class="live-clock">
+          <div class="clock-display">
+            <i class="bi bi-clock me-2"></i>
+            {{ currentTime }}
+          </div>
+          <div class="date-display">{{ currentDate }}</div>
         </div>
-          <div class="contact-info mt-4">
+
+        <div class="skills-section">
+          <h5 class="section-title">
+            <i class="bi bi-gear me-2"></i>技能等级
+          </h5>
+          <div class="skills-list">
+            <div v-for="skill in skills" :key="skill.name" class="skill-item" @click="animateSkill(skill)">
+              <div class="skill-header">
+                <span class="skill-name">{{ skill.name }}</span>
+                <span class="skill-level">{{ skill.level }}%</span>
+              </div>
+              <div class="skill-bar">
+                <div class="skill-progress" :style="{ width: skill.level + '%' }" :class="skill.color"></div>
+              </div>
+            </div>
+          </div>
+        </div>       
+
+         <div class="contact-info mt-4">
           <h5>联系我：</h5>
           <div class="contact-icons">
             <a href="mailto:qq86280630qq@163.com" class="contact-icon email-icon" title="发送邮件: qq86280630qq@163.com">
@@ -88,47 +124,100 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const isCollapsed = ref(true); // 默认收起状态
+const isCollapsed = ref(true);
+const avatarClicked = ref(false);
+const currentTime = ref('');
+const currentDate = ref('');
+const currentStatus = ref('在线中');
+const statusClass = ref('status-online');
 
-// 切换侧边栏折叠状态
+// 技能数据
+const skills = ref([
+  { name: 'JavaScript', level: 85, color: 'js-color' },
+  { name: 'Vue.js', level: 80, color: 'vue-color' },  { name: 'Python', level: 70, color: 'python-color' },
+]);
+
+// 切换侧边栏
 const toggleCollapse = () => {
   isCollapsed.value = !isCollapsed.value;
-  
-  // 可以选择保存用户的偏好
   localStorage.setItem('sidebarState', isCollapsed.value ? 'collapsed' : 'expanded');
 };
 
-// 点击页面其他区域自动收起侧边栏
+// 头像点击效果
+const triggerAvatarEffect = () => {
+  avatarClicked.value = true;
+  setTimeout(() => {
+    avatarClicked.value = false;
+  }, 1000);
+};
+
+// 技能动画
+const animateSkill = (skill) => {
+  const originalLevel = skill.level;
+  skill.level = 0;
+  setTimeout(() => {
+    skill.level = originalLevel;  }, 100);
+};
+
+// 更新时间
+const updateTime = () => {
+  const now = new Date();
+  currentTime.value = now.toLocaleTimeString('zh-CN', { 
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+  currentDate.value = now.toLocaleDateString('zh-CN', { 
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long'
+  });
+};
+
+// 更新状态
+const updateStatus = () => {
+  const hour = new Date().getHours();
+  if (hour >= 6 && hour < 12) {
+    currentStatus.value = '早安时光';
+    statusClass.value = 'status-morning';
+  } else if (hour >= 12 && hour < 18) {
+    currentStatus.value = '午后编程';
+    statusClass.value = 'status-afternoon';
+  } else if (hour >= 18 && hour < 22) {
+    currentStatus.value = '夜晚思考';
+    statusClass.value = 'status-evening';
+  } else {
+    currentStatus.value = '深夜码农';
+    statusClass.value = 'status-night';
+  }
+};
+
+// 页面点击外部区域处理
 const handleClickOutside = (event) => {
-  const sidebarContainer = document.querySelector('.sidebar-container');
+  const sidebarContainer = document.querySelector('.mobile-personal-info');
   if (!isCollapsed.value && sidebarContainer && !sidebarContainer.contains(event.target)) {
     isCollapsed.value = true;
   }
 };
 
-// 导航到不同分类的文章
-const navigateTo = (category) => {
-  router.push({
-    name: 'ArticleList',
-    query: { category }
-  });
-  
-  // 导航后自动收起侧边栏（移动设备上特别有用）
-  isCollapsed.value = true;
-};
-
-// 监听页面点击事件，以便在点击页面其他区域时收起侧边栏
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
   
-  // 恢复用户偏好设置
+  // 恢复用户偏好
   const savedState = localStorage.getItem('sidebarState');
   if (savedState) {
     isCollapsed.value = savedState === 'collapsed';
   }
+  
+  // 开始时间更新
+  updateTime();
+  updateStatus();
+  setInterval(updateTime, 1000);
+  setInterval(updateStatus, 60000); // 每分钟检查状态
 });
 
-// 组件卸载时清理事件监听器
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
 });
@@ -224,6 +313,8 @@ onBeforeUnmount(() => {
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   border: 3px solid var(--bs-primary);
   transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
 }
 
 .avatar-container:hover {
@@ -235,6 +326,35 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: all 0.3s ease;
+}
+
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 215, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+}
+
+.avatar-overlay.active {
+  opacity: 1;
+  transform: scale(1);
+  animation: sparkle 0.6s ease-out;
+}
+
+.avatar-overlay i {
+  font-size: 2rem;
+  color: white;
+  animation: spin 0.6s ease-in-out;
 }
 
 .user-name {
@@ -244,80 +364,149 @@ onBeforeUnmount(() => {
   font-size: 1.2rem;
 }
 
-.navigation-buttons {
+.user-status {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.status-online { background-color: #28a745; }
+.status-morning { background-color: #ffc107; }
+.status-afternoon { background-color: #fd7e14; }
+.status-evening { background-color: #6f42c1; }
+.status-night { background-color: #343a40; }
+
+.status-text {
+  font-size: 0.85rem;
+  color: var(--bs-text-muted);
+  font-weight: 500;
+}
+
+/* 实时时钟样式 */
+.live-clock {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.clock-display {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.date-display {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+/* 技能展示样式 */
+.skills-section {
+  margin: 1.5rem 0;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--bs-body-color);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.skills-list {
   display: flex;
   flex-direction: column;
-  margin-top: 2rem;
   gap: 0.75rem;
 }
 
-.nav-button {
-  display: flex;
-  align-items: center;
-  background-color: var(--bs-light);
-  border: 1px solid var(--bs-border-color);
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
+.skill-item {
   cursor: pointer;
   transition: all 0.3s ease;
-  text-align: left;
-  color: var(--bs-body-color);
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.skill-item:hover {
+  background-color: var(--bs-light);
+  transform: translateX(5px);
+}
+
+[data-bs-theme="dark"] .skill-item:hover {
+  background-color: var(--bs-gray-800);
+}
+
+.skill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.skill-name {
+  font-size: 0.9rem;
   font-weight: 500;
-  position: relative;
+  color: var(--bs-body-color);
+}
+
+.skill-level {
+  font-size: 0.8rem;
+  color: var(--bs-text-muted);
+  font-weight: 600;
+}
+
+.skill-bar {
+  width: 100%;
+  height: 6px;
+  background-color: var(--bs-border-color);
+  border-radius: 3px;
   overflow: hidden;
 }
 
-[data-bs-theme="dark"] .nav-button {
-  background-color: var(--bs-gray-800);
-  border-color: var(--bs-border-color-translucent);
-}
-
-.nav-button:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
+.skill-progress {
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s;
+  border-radius: 3px;
+  transition: width 1s ease;
 }
 
-.nav-button:hover:before {
-  left: 100%;
-}
-
-.nav-button:hover {
-  background-color: var(--bs-primary);
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(var(--bs-primary-rgb), 0.3);
-  border-color: var(--bs-primary);
-}
-
-.nav-button i {
-  font-size: 1.1rem;
-  width: 20px;
-}
+.js-color { background: linear-gradient(90deg, #f7df1e, #f0d800); }
+.vue-color { background: linear-gradient(90deg, #4fc08d, #42b883); }
+.node-color { background: linear-gradient(90deg, #8cc84b, #6bb349); }
+.python-color { background: linear-gradient(90deg, #3776ab, #2e5d8a); }
+.css-color { background: linear-gradient(90deg, #1572b6, #0e5aa3); }
 
 .contact-info {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 0.3rem;
+  padding-top: 0.3rem;
   border-top: 2px solid var(--bs-border-color);
 }
 
 .contact-info h5 {
   color: var(--bs-body-color);
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   font-size: 1rem;
 }
 
 .contact-icons {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  padding: 1rem 0;
+  gap: 1.2rem;
+  padding: 0.5rem 0;
 }
 
 .contact-icon {
