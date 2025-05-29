@@ -1,5 +1,5 @@
 <template>
-  <div class="welcome-section">
+  <div class="welcome-section" id="welcome-section">
     <div class="welcome-content">
       <h1 class="welcome-title animate__animated animate__fadeInDown animate__delay-0.5s">欢迎访问</h1>
       <p class="welcome-text animate__animated animate__fadeInUp animate__delay-1s">这里是我的个人博客，记录学习、游戏和个人作品</p>

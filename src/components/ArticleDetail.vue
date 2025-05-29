@@ -26,12 +26,11 @@
               最后更新: {{ formatDate(article.updatedAt) }}
             </span>
           </div>
-        </div>
-          <div class="article-actions mb-4 animate__animated animate__fadeInRight">
-          <router-link to="/" class="btn btn-outline-secondary">
+        </div>          <div class="article-actions mb-4 animate__animated animate__fadeInRight">
+          <button @click="goBackToList" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-2"></i>
             返回列表
-          </router-link>
+          </button>
         </div>
 
         <div class="article-content">
@@ -39,13 +38,12 @@
           <div v-html="article.content" class="article-content-html"></div>
         </div>        <!-- 评论和点赞区域 -->
         <CommentSection :article-id="article.id" />
-        
-        <!-- 底部返回按钮 -->
+          <!-- 底部返回按钮 -->
         <div class="article-bottom-actions mt-5 pt-4 border-top text-center animate__animated animate__fadeInUp">
-          <router-link to="/" class="btn btn-primary btn-lg">
+          <button @click="goBackToList" class="btn btn-primary btn-lg">
             <i class="bi bi-arrow-left me-2"></i>
             返回文章列表
-          </router-link>
+          </button>
         </div>
       </div>
     </div>
@@ -125,9 +123,45 @@ async function fetchArticle() {
     error.value = e;
     console.error(`获取文章 ${id} 失败:`, e);
   } finally {
-    loading.value = false;
-  }
+    loading.value = false;  }
 }
+
+// 返回文章列表，保持原来的页码和筛选条件
+const goBackToList = () => {
+  const query = {};
+  
+  // 获取返回页码
+  const returnPage = route.query.returnPage;
+  
+  // 如果有搜索参数，保持搜索状态
+  if (route.query.search) {
+    query.search = route.query.search;
+  }
+  
+  // 如果有分类参数，保持分类状态
+  if (route.query.category) {
+    query.category = route.query.category;
+  }
+  
+  // 构造返回路由
+  const returnRoute = {
+    name: 'ArticleList',
+    query
+  };
+  
+  // 如果有返回页码，需要在跳转后设置页码
+  if (returnPage) {
+    router.push(returnRoute).then(() => {
+      // 通过URL hash来传递页码信息，让ArticleList组件处理
+      router.replace({
+        ...returnRoute,
+        hash: `#page=${returnPage}`
+      });
+    });
+  } else {
+    router.push(returnRoute);
+  }
+};
 
 // 删除功能已经移除
 

@@ -39,8 +39,7 @@
             </div>
           </div>
 
-          <!-- 内容区域 -->
-          <div class="article-content-section">
+          <!-- 内容区域 -->          <div class="article-content-section">
             <div class="article-meta mb-2">
               <span class="article-date">{{ formatDate(article.createdAt) }}</span>
               <span :class="['article-category', getCategoryClass(article.category)]">
@@ -48,7 +47,7 @@
               </span>
             </div>
 
-            <router-link :to="`/article/${article.id}`" class="article-title-link">
+            <router-link :to="getArticleDetailRoute(article.id)" class="article-title-link">
               <h3 class="article-title">{{ article.title }}</h3>
             </router-link>
 
@@ -57,7 +56,7 @@
               <div v-html="getExcerpt(article.content)" class="article-content-preview"></div>
             </div>
 
-            <router-link :to="`/article/${article.id}`" class="read-more-btn">
+            <router-link :to="getArticleDetailRoute(article.id)" class="read-more-btn">
               阅读全文
               <i class="bi bi-arrow-right ms-1"></i>
             </router-link>
@@ -117,15 +116,14 @@
           </div>
 
           <!-- 内容区域 -->
-          <div class="article-content-section">
-            <div class="article-meta mb-2">
+          <div class="article-content-section">            <div class="article-meta mb-2">
               <span class="article-date">{{ formatDate(article.createdAt) }}</span>
               <span :class="['article-category', getCategoryClass(article.category)]">
                 {{ getCategoryName(article.category) }}
               </span>
             </div>
 
-            <router-link :to="`/article/${article.id}`" class="article-title-link">
+            <router-link :to="getArticleDetailRoute(article.id)" class="article-title-link">
               <h3 class="article-title">{{ article.title }}</h3>
             </router-link>
 
@@ -134,7 +132,7 @@
               <div v-html="getExcerpt(article.content)" class="article-content-preview"></div>
             </div>
 
-            <router-link :to="`/article/${article.id}`" class="read-more-btn">
+            <router-link :to="getArticleDetailRoute(article.id)" class="read-more-btn">
               阅读全文
               <i class="bi bi-arrow-right ms-1"></i>
             </router-link>
@@ -272,6 +270,35 @@ const clearSearch = () => {
   router.push({ name: 'ArticleList' });
 };
 
+// 生成文章详情路由，包含当前页面信息
+const getArticleDetailRoute = (articleId) => {
+  const query = {};
+  
+  // 如果当前是筛选状态，传递筛选页码
+  if (route.query.search || route.query.category) {
+    query.returnPage = currentFilteredPage.value;
+  } else {
+    // 否则传递普通页码
+    query.returnPage = currentPage.value;
+  }
+  
+  // 保持原有的搜索和分类参数
+  if (route.query.search) {
+    query.search = route.query.search;
+  }
+  if (route.query.category) {
+    query.category = route.query.category;
+  }
+  
+  const detailRoute = {
+    path: `/article/${articleId}`,
+    query
+  };
+  
+  console.log('生成文章详情路由:', detailRoute); // 调试日志
+  return detailRoute;
+};
+
 // 分页方法
 const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
@@ -378,11 +405,19 @@ function formatDate(dateString) {
 }
 
 // 监听路由变化，重新获取文章
-watch(() => route.query, () => {
-  // 重置分页
-  currentPage.value = 1;
-  currentFilteredPage.value = 1;
-  fetchArticles();
+watch(() => route.query, (newQuery, oldQuery) => {
+  // 只有当搜索或分类参数变化时才重置分页，忽略returnPage参数的变化
+  const newSearch = newQuery.search;
+  const oldSearch = oldQuery?.search;
+  const newCategory = newQuery.category;
+  const oldCategory = oldQuery?.category;
+  
+  if (newSearch !== oldSearch || newCategory !== oldCategory) {
+    // 重置分页
+    currentPage.value = 1;
+    currentFilteredPage.value = 1;
+    fetchArticles();
+  }
 }, { deep: true });
 
 async function fetchArticles() {
@@ -405,7 +440,34 @@ async function fetchArticles() {
   }
 }
 
-onMounted(() => {
-  fetchArticles();
+onMounted(async () => {
+  await fetchArticles();
+  
+  // 检查URL hash中是否有页码信息
+  if (route.hash && route.hash.startsWith('#page=')) {
+    const pageNum = parseInt(route.hash.replace('#page=', ''));
+ //   console.log('从URL hash恢复页码:', pageNum); // 调试日志
+    
+    if (!isNaN(pageNum) && pageNum > 0) {
+      // 使用nextTick确保DOM更新后再设置页码
+      await new Promise(resolve => setTimeout(resolve, 100)); // 给计算属性一些时间更新
+      
+      // 根据当前是否在筛选状态来设置相应的页码
+      if (route.query.search || route.query.category) {
+//        console.log('设置筛选页码:', pageNum, '总页数:', totalFilteredPages.value);
+        if (pageNum <= totalFilteredPages.value) {
+          currentFilteredPage.value = pageNum;
+        }
+      } else {
+ //       console.log('设置普通页码:', pageNum, '总页数:', totalPages.value);
+        if (pageNum <= totalPages.value) {
+          currentPage.value = pageNum;
+        }
+      }
+      
+      // 清除hash，避免页面刷新时重复处理
+      router.replace({ ...route, hash: '' });
+    }
+  }
 });
 </script>
