@@ -34,7 +34,7 @@ const scrollToArticles = () => {
   justify-content: center;
   text-align: center;
   position: relative;
-  background-image: url('../assets/BlogPicture/Mybackground.png');
+  background-image: url('../assets/BlogPicture/background.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
