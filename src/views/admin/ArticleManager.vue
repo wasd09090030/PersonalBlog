@@ -100,7 +100,7 @@ const createArticle = () => {
 };
 
 const goToEditPage = (article) => {
-  router.push({ name: 'ArticleEditor', params: { id: article.id } });
+  router.push({ name: 'ArticleEditorEdit', params: { id: article.id } });
 };
 
 // 已经不需要模态框相关的处理函数
