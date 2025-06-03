@@ -60,7 +60,7 @@
       <div class="sidebar-content">
         <div class="user-profile text-center">
           <div class="avatar-container" @click="triggerAvatarEffect">
-            <img src="../assets/icon/Master.png" alt="用户头像" class="avatar-img">
+            <img src="../assets/icon/Master.ico" alt="用户头像" class="avatar-img">
             <div class="avatar-overlay" :class="{ 'active': avatarClicked }">
               <i class="bi bi-stars"></i>
             </div>
