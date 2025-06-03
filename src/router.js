@@ -1,12 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import ArticleList from './components/ArticleList.vue';
-import ArticleDetail from './components/ArticleDetail.vue';
-import AdminLayout from './layouts/AdminLayout.vue';
-import AdminLogin from './views/admin/AdminLogin.vue';
-import AdminDashboard from './views/admin/AdminDashboard.vue';
-import ArticleManager from './views/admin/ArticleManager.vue';
-import ArticleEditor from './views/admin/ArticleEditor.vue';
 import auth from './store/auth';
+
+// 使用动态导入实现路由级懒加载
+const ArticleList = () => import('./components/ArticleList.vue');
+const ArticleDetail = () => import('./components/ArticleDetail.vue');
+const AdminLayout = () => import('./layouts/AdminLayout.vue');
+const AdminLogin = () => import('./views/admin/AdminLogin.vue');
+const AdminDashboard = () => import('./views/admin/AdminDashboard.vue');
+const ArticleManager = () => import('./views/admin/ArticleManager.vue');
+const ArticleEditor = () => import('./views/admin/ArticleEditor.vue');
 
 const routes = [
   // 前端展示路由 - 保持不变

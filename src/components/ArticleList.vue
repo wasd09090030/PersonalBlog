@@ -21,19 +21,17 @@
         <div 
           v-for="(article, index) in paginatedFilteredArticles" 
           :key="article.id" 
-          :class="['article-card', 'animate__animated', 'animate__fadeInUp', { 'article-card-reverse': (currentFilteredIndex + index + 1) % 2 === 0 }]"
-          :style="{ animationDelay: `${index * 0.1}s` }"
-        >
-          <!-- 封面图片区域 -->
+          :class="['article-card', 'animate__animated', 'animate__fadeInUp', { 'article-card-reverse': (currentFilteredIndex + index + 1) % 2 === 0 }]"          :style="{ animationDelay: `${index * 0.1}s` }"
+        >          <!-- 封面图片区域 -->
           <div class="article-image-section">
-            <div v-if="article.coverImage" class="article-image-container">
-              <img 
-                :src="article.coverImage" 
-                :alt="article.title" 
-                @error="handleImageError($event)"
-                class="article-image"
-              >
-            </div>
+            <img
+              v-if="article.coverImage && article.coverImage !== 'null'"
+              :src="article.coverImage"
+              :alt="article.title"
+              class="article-image"
+              style="height: 300px; aspect-ratio: 16/9; object-fit: cover; width: 100%;"
+              @error="handleImageError"
+            />
             <div v-else class="article-image-placeholder">
               <i class="bi bi-image fs-1 text-muted"></i>
             </div>
@@ -97,26 +95,24 @@
       <div v-if="paginatedArticles.length" class="articles-container">        <div 
           v-for="(article, index) in paginatedArticles" 
           :key="article.id" 
-          :class="['article-card', 'animate__animated', 'animate__fadeInUp', { 'article-card-reverse': (currentIndex + index + 1) % 2 === 0 }]"
-          :style="{ animationDelay: `${index * 0.1}s` }"
-        >
-          <!-- 封面图片区域 -->
+          :class="['article-card', 'animate__animated', 'animate__fadeInUp', { 'article-card-reverse': (currentIndex + index + 1) % 2 === 0 }]"          :style="{ animationDelay: `${index * 0.1}s` }"
+        >          <!-- 封面图片区域 -->
           <div class="article-image-section">
-            <div v-if="article.coverImage" class="article-image-container">
-              <img 
-                :src="article.coverImage" 
-                :alt="article.title" 
-                @error="handleImageError($event)"
-                class="article-image"
-              >
-            </div>
+            <img
+              v-if="article.coverImage && article.coverImage !== 'null'"
+              :src="article.coverImage"
+              :alt="article.title"
+              class="article-image"
+              style="height: 300px; aspect-ratio: 16/9; object-fit: cover; width: 100%;"
+              @error="handleImageError"
+            />
             <div v-else class="article-image-placeholder">
               <i class="bi bi-image fs-1 text-muted"></i>
             </div>
           </div>
 
           <!-- 内容区域 -->
-          <div class="article-content-section">            <div class="article-meta mb-2">
+          <div class="article-content-section"><div class="article-meta mb-2">
               <span class="article-date">{{ formatDate(article.createdAt) }}</span>
               <span :class="['article-category', getCategoryClass(article.category)]">
                 {{ getCategoryName(article.category) }}
@@ -176,6 +172,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { debounce, preloadImages } from '../utils/lazyLoad.js';
 import './ArticleList.styles.css';
 
 // 创建ref来引用ArticleList容器

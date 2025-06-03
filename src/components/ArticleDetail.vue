@@ -9,10 +9,14 @@
     <div v-else-if="error" class="alert alert-danger animate__animated animate__shakeX" role="alert">
       加载文章失败: {{ error.message }}
     </div>    <div v-else-if="article" class="article-container card shadow-sm animate__animated animate__fadeInUp">
-      <div class="card-body">
-        <!-- 封面图片 -->
-        <div v-if="article.coverImage" class="article-cover mb-4 animate__animated animate__fadeIn">
-          <img :src="article.coverImage" :alt="article.title" class="cover-image" />
+      <div class="card-body">        <!-- 封面图片 -->
+        <div v-if="article.coverImage && article.coverImage !== 'null'" class="article-cover mb-4 animate__animated animate__fadeIn">
+          <img 
+            :src="article.coverImage" 
+            :alt="article.title" 
+            class="cover-image"
+            style="height: 400px; aspect-ratio: 16/9; object-fit: cover; width: 100%; border-radius: 0.5rem;"
+          />
         </div>
         
         <div class="article-header mb-4 animate__animated animate__fadeInDown">
@@ -35,9 +39,8 @@
 
         <div class="article-content">
           <!-- eslint-disable-next-line vue/no-v-html -->
-          <div v-html="article.content" class="article-content-html"></div>
-        </div>        <!-- 评论和点赞区域 -->
-        <CommentSection :article-id="article.id" />
+          <div v-html="article.content" class="article-content-html"></div>        </div>        <!-- 评论和点赞区域 -->
+        <LazyCommentSection :article-id="article.id" />
           <!-- 底部返回按钮 -->
         <div class="article-bottom-actions mt-5 pt-4 border-top text-center animate__animated animate__fadeInUp">
           <button @click="goBackToList" class="btn btn-primary btn-lg">
@@ -57,7 +60,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import CommentSection from './CommentSection.vue';
+import LazyCommentSection from './LazyCommentSection.vue';
 
 const route = useRoute();
 const router = useRouter();
