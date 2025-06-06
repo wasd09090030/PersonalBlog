@@ -21,8 +21,7 @@
         <div 
           v-for="(article, index) in paginatedFilteredArticles" 
           :key="article.id" 
-          :class="['article-card', 'animate__animated', 'animate__fadeInUp', { 'article-card-reverse': (currentFilteredIndex + index + 1) % 2 === 0 }]"          :style="{ animationDelay: `${index * 0.1}s` }"
-        >          <!-- 封面图片区域 -->
+          :class="['article-card', 'animate__animated', 'animate__fadeInUp', { 'article-card-reverse': (currentFilteredIndex + index + 1) % 2 === 0 }]"          :style="{ animationDelay: `${index * 0.1}s` }"        >          <!-- 封面图片区域 -->
           <div class="article-image-section">
             <img
               v-if="article.coverImage && article.coverImage !== 'null'"
@@ -30,6 +29,7 @@
               :alt="article.title"
               class="article-image"
               style="height: 300px; aspect-ratio: 16/9; object-fit: cover; width: 100%;"
+              loading="lazy"
               @error="handleImageError"
             />
             <div v-else class="article-image-placeholder">
@@ -89,8 +89,7 @@
         </div>
       </div>
     </template>
-    
-    <!-- 默认显示所有文章 -->
+      <!-- 默认显示所有文章 -->
     <template v-else>
       <div v-if="paginatedArticles.length" class="articles-container">        <div 
           v-for="(article, index) in paginatedArticles" 
@@ -104,6 +103,7 @@
               :alt="article.title"
               class="article-image"
               style="height: 300px; aspect-ratio: 16/9; object-fit: cover; width: 100%;"
+              loading="lazy"
               @error="handleImageError"
             />
             <div v-else class="article-image-placeholder">
